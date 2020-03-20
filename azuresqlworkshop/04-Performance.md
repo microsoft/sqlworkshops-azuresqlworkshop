@@ -352,7 +352,7 @@ From a powershell command prompt, change to the directory for this module activi
 [vmusername] is the name of the user in your Windows Virtual Machine. Substitute in the path for c:\users\\[vmusername] where you have cloned the GitHub repo.
 
 <pre>
-cd c:\users\[vmusername]\sqlworkshops\AzureSQLWorkshop\azuresqlworkshop\04-Performance\monitor_and_scale
+cd c:\users\[vmusername]\sqlworkshops-azuresqlworkshop\azuresqlworkshop\04-Performance\monitor_and_scale
 </pre>
 
 Run the workload with the following command
@@ -822,7 +822,7 @@ From a powershell command prompt, change to the directory for this module activi
 [vmusername] is the name of the user in your Windows Virtual Machine. Substitute in the path for c:\users\\[vmusername] where you have cloned the GitHub repo.
 
 <pre>
-cd c:\users\[vmusername]\sqlworkshops\AzureSQLWorkshop\azuresqlworkshop\04-Performance\tuning_applications
+cd c:\users\[vmusername]\sqlworkshops-azuresqlworkshop\azuresqlworkshop\04-Performance\tuning_applications
 </pre>
 
 Run the workload with the following command
@@ -881,7 +881,7 @@ Intelligent Query Processing (IQP) is a suite of new capabilities built into the
 
 Azure SQL Database and Managed Instance support the same database compatibility level required to use IQP (150) as SQL Server 2019. You can learn more about Intelligent Query Processing at [Intelligent query processing in SQL databases](https://docs.microsoft.com/en-us/sql/relational-databases/performance/intelligent-query-processing?view=sql-server-ver15).
 
-You can read more details and go through a hands-on lab with IQP using the SQL Server 2019 Workshop, [Module 2](https://github.com/microsoft/sqlworkshops/tree/master/sql2019workshop/sql2019wks/02_IntelligentPerformance). The only prerequisite you will need to change is to import a compatible version of the [WideWorldImporters database for Azure SQL Database](https://docs.microsoft.com/en-us/sql/samples/wide-world-importers-oltp-install-configure?view=sql-server-ver15). For Managed Instance, you can also restore a backup of WideWorldImporters once you copy into Azure Blob Storage.
+You can read more details and go through a hands-on lab with IQP using the SQL Server 2019 Workshop, [Module 2](https://github.com/microsoft/sqlworkshops-sql2019workshop/blob/master/sql2019workshop/02_IntelligentPerformance.md). The only prerequisite you will need to change is to import a compatible version of the [WideWorldImporters database for Azure SQL Database](https://docs.microsoft.com/en-us/sql/samples/wide-world-importers-oltp-install-configure?view=sql-server-ver15). For Managed Instance, you can also restore a backup of WideWorldImporters once you copy into Azure Blob Storage.
 
 **Automatic Plan Correction**
 
