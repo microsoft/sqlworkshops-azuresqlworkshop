@@ -96,4 +96,4 @@ git clone --config core.autocrlf=false https://github.com/microsoft/sqlworkshops
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="https://github.com/microsoft/sqlworkshops/blob/master/graphics/geopin.png?raw=true"><b >Next Steps</b></p>
 
-Next, Continue to <a href="https://github.com/microsoft/sqlworkshops-azuresqlworkshop/blob/master/01-IntroToAzureSQL.md" target="_blank"><i> 01 - Introduction to Azure SQL</i></a>.
+Next, Continue to <a href="https://github.com/microsoft/sqlworkshops-azuresqlworkshop/blob/master/azuresqlworkshop/01-IntroToAzureSQL.md" target="_blank"><i> 01 - Introduction to Azure SQL</i></a>.
