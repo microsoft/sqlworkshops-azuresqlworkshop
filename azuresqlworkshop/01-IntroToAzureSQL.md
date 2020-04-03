@@ -8,7 +8,7 @@
 
 <img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/textbubble.png"> <h2>01 - Introduction to Azure SQL</h2>
 
-In this module, you'll start with a brief history of why and how we built Azure SQL, then you’ll then learn about the various deployment options and service tiers, including what to use when. This includes Azure SQL Database and Azure SQL managed instance. Understanding what Platform as a Service (PaaS) encompasses and how it compares to the SQL Server “box” will help level-set what you get (and don’t get) when you move to the cloud.  
+In this module, you'll start with a brief history of why and how we built Azure SQL, then you'll then learn about the various deployment options and service tiers, including what to use when. This includes Azure SQL Database and Azure SQL managed instance. Understanding what Platform as a Service (PaaS) encompasses and how it compares to the SQL Server "box" will help level-set what you get (and don't get) when you move to the cloud.  
 
 >Note: This is the only module that does not contain activities for you to complete. 
 
@@ -19,7 +19,8 @@ In each module you'll get more references, which you should follow up on to lear
 In this module, you'll cover these topics:  
 [1.1](#1.1): History   
 [1.2](#1.2): Azure SQL Overview   
-[1.3](#1.3): Purchasing models, service tiers, and hardware choices
+[1.3](#1.3): Purchasing models, service tiers, and hardware choices<br>
+[1.4](#1.4): Interfaces for Azure SQL
 
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
@@ -30,16 +31,59 @@ Before you learn about Azure SQL and where it's going, let's briefly consider wh
 
 [An explanation](https://social.technet.microsoft.com/wiki/contents/articles/1308.select-an-edition-of-sql-server-for-application-development/revision/7.aspx) of when you would want to use the early Azure SQL Database (2010) is as follows: [Azure SQL Database] is a cloud database offering that Microsoft provides as part of the Azure cloud computing platform. Unlike other editions of SQL Server, you do not need to provision hardware for, install or patch [Azure SQL Database]; Microsoft maintains the platform for you. You also do not need to architect a database installation for scalability, high availability or disaster recovery as these features are provided automatically by the service. Any application that uses [Azure SQL Database] must have Internet access in order to connect to the database.  
 
-This explanation still remains valid today, though the capabilities around security, performance, availability, and scale have been enhanced greatly. There are now multiple deployment options with the flexibility to scale to your needs, and there have been over seven million deployments of some form of Azure SQL.  
+This explanation still remains valid today, though the capabilities around security, performance, availability, and scale have been enhanced greatly. Azure SQL has evolved over the years to include Virtual Machine, Managed Instances, and several options for Databases. There are now multiple deployment options with the flexibility to scale to your needs, and there have been over seven million deployments of some form of Azure SQL. The architecture for Azure SQL has also evolved to meet the ever growing demands of applications. For example, the v12 architecture introduced in 2014 set the stage for new possibilities such as elastic databases, vCore choices, Business Critical deployments, Hyperscale, and Serverless architectures. 
 
 Since 2008, SQL Server has changed a lot and Azure SQL has changed a lot. It's no surprise then that the role of the SQL Server professional has also changed a lot. The goal of this course is to help SQL Server professionals translate their existing skills to become not only better SQL Server professionals, but also Azure SQL professionals.  
-
 
 <br>
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
-<h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="1.2">1.2 Azure SQL Deployment Options</h2></a>
+<h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="1.2">1.2 Azure SQL Overview</h2></a>
+
+In order to understand more "What is Azure SQL?" and deployment options it is important to know important terms from the Azure ecosystem.
+
+## The Azure Ecosystem ##
+
+The Azure ecosystem includes accounts, subscriptions, interfaces, resource management, and more for a wide variety of Azure services. Azure SQL is a family of services within the Azure ecosystem.
+
+### Azure Accounts and Subscriptions ###
+
+An Azure account is required to deploy and use Azure services. Each azure account has one or more subscriptions. Subscriptions provide a unit of billing and organization for Azure resources. You can read more about Azure subscription management in the [documentation](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/initial-subscriptions).
+
+### Azure Portal ###
+
+The Azure Portal is the primary user interface to interact with the Azure ecosystem. The Azure Portal can be viewed with a [web browser](https://portal.azure.com), [Windows application](https://portal.azure.com/App/Download), or [mobile application](https://azure.microsoft.com/en-us/features/azure-portal/mobile-app).
+
+### Azure Marketplace ###
+
+All Azure services are consumed through a marketplace including Microsoft and 3rd party services. When you select an option in the portal to create a new resource from an Azure service you are using the Azure Marketplace.
+
+###  Azure APIs and CLIs ###
+
+All Azure services support Application Programming Interfaces (API). A common thread for all Azure Services is native support for a Representational State Transfer ([REST](https://docs.microsoft.com/en-us/rest/api/azure)) API. In addition, two common Command Line Interfaces (CLI) that work across Azure services are the [az CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) and [Powershell Azure cmdlets](https://docs.microsoft.com/en-us/powershell/azure).
+
+### Azure Resource Manager (ARM) ###
+
+Azure provides an infrastructure for all Azure services for deployment, management, security, and logging called the [Azure Resource Manager](https://azure.microsoft.com/en-us/features/resource-manager/) (ARM). One of the most common concepts provided by ARM you will use in this workshop is called a **resource group**. ARM also provides a system for automated deployments through ARM templates.
+
+### Azure Monitor ###
+
+The Azure ecosystem provides a system for Azure services to collect and manage metrics and events including a logging system called [Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/overview). Logs can be queried using a common language called [Kusto](https://docs.microsoft.com/en-us/azure/kusto/query/) (KQL). Azure SQL integrates with the Azure Monitor system.
+
+### Azure Regions and Datacenters ###
+
+Azure services are deployed in a [global infrastructure](https://azure.microsoft.com/en-us/global-infrastructure/) in physical buildings called **datacenters**. Datacenters are organized in geographical locations around the world in [regions](https://azure.microsoft.com/en-us/global-infrastructure/regions/). For maximum availability, regions are often paired. Datacenters also provide additional layers of protection through a concept called an [availability zone](https://azure.microsoft.com/en-us/global-infrastructure/availability-zones/).
+
+### Azure SLA ###
+
+Formal documents called [Service-Level Agreements](https://azure.microsoft.com/en-us/support/legal/sla/) (SLAs) capture the specific terms that define the performance standards that apply to Azure.
+
+SLAs describe Microsoft's commitment to providing Azure customers with specific performance standards.
+There are SLAs for individual Azure products and services.
+SLAs also specify what happens if a service or product fails to perform to a governing SLA's specification. Azure SQL has specific SLAs that apply to availability and performance which you will learn about in this workshop.
+
+## What is Azure SQL? ##
 
 Within the umbrella of the "Azure SQL" term, there are many deployment options and choices to be made in order to tailor to various customers' needs. While there are a lot of options, this is not meant to confuse or complicate things, but rather to give customers the flexibility to get and pay for exactly what they need. This topic will cover some of the challenges and scenarios that lead to choosing various Azure SQL deployment options, as well as some of the technical specifications for each of those options. The deployment options discussed in this topic include Azure SQL virtual machines, Azure SQL managed instances, Azure SQL Databases, and Azure SQL "pools" (Azure SQL Instance Pools and Azure SQL Elastic Pools).  
 
@@ -113,12 +157,11 @@ In this section, you've learned about Azure SQL and the deployment options that 
 
 ![](../graphics/azuresql2.png)
 
-
 If you want to dive deeper into the deployment options and how to choose, check out the following resources:  
 * [Blog announcement for Azure SQL](https://techcommunity.microsoft.com/t5/Azure-SQL-Database/Unified-Azure-SQL-experience/ba-p/815368) which explains and walks through Azure SQL and some of the resulting views and experiences available in the Azure portal.
 * [Microsoft Customer Stories](https://customers.microsoft.com/en-us/home?sq=&ff=&p=0) for many more stories similar to the ones above. You can use this to explore various use cases, industries, and solutions.  
 * [Choose the right deployment option in Azure SQL](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-paas-vs-sql-server-iaas) is a page in the documentation regularly updated to help provide insight into making the decisions between the Azure SQL options.
-* [Choosing your database migration path to Azure](https://azure.microsoft.com/mediahandler/files/resourcefiles/choosing-your-database-migration-path-to-azure/Choosing_your_database_migration_path_to_Azure.pdf) is a white paper that talks about tools for discovering, assessing, planning and migrating SQL databases to Azure. This workshop will refer to it several times, and it's a highly recommended read. Chapter 5 deeply discusses choosing the right deployment option.  
+* [Choosing your database migration path to Azure](https://azure.microsoft.com/mediahandler/files/resourcefiles/choosing-your-database-migration-path-to-azure/Choosing_your_database_migration_path_to_Azure.pdf) is a white paper that talks about tools for discovering, assessing, planning, and migrating SQL databases to Azure. This workshop will refer to it several times, and it's a highly recommended read. Chapter 5 deeply discusses choosing the right deployment option.  
 * [Feature comparison between SQL database, SQL managed instance, and SQL Server](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-features) 
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
@@ -162,7 +205,44 @@ The vCore model lets you choose the generation of hardware:
 
 Basically, Gen4 hardware offers substantially more memory per vCore. However, Gen5 hardware allows you to scale up compute resources much higher. [New Gen4 databases are no longer supported in certain regions](https://azure.microsoft.com/en-us/updates/gen-4-hardware-on-azure-sql-database-approaching-end-of-life-in-2020/), where Gen5 is available in most regions worldwide. As technology advances, you can expect that the hardware will change as well. For example, Fsv2-series (compute optimized) and M-series (memory optimized) hardware options recently became available in public preview for Azure SQL DB. You can review the latest hardware generations and availability [here](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore#hardware-generations).
 
-> Note: If you choose General Purpose within Azure SQL DB and want to use the serverless compute tier, Gen5 hardware is currently the only option and it currently can scale up to 16 vCores.  
+> Note: If you choose General Purpose within Azure SQL DB and want to use the serverless compute tier, Gen5 hardware is currently the only option and it currently can scale up to 16 vCores.
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
+
+<h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="1.4">1.4 Interfaces for Azure SQL</h2></a>
+
+As you deploy, use, and manage Azure SQL resources you will use a variety of interfaces and tools.
+
+### Azure Portal ###
+
+The Azure Portal is well integrated for Azure SQL resources including Virtual Machines, Managed Instances, and Databases. You will use the portal extensively in this workshop.
+
+The concept of *Azure SQL* is also baked into the portal experience for both managing resources and deploying Azure SQL options.
+
+![](../graphics/Azure_SQL_In_Portal.png)
+
+### SQL Server Management Studio (SSMS) ###
+
+[SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15) (SSMS) is the most famous and popular tool for SQL Server in the world. SSMS is integrated to understand how to visualize and work with Azure SQL including SQL Server in Virtual Machines, Managed Instances, or Databases. When necessary, SSMS will only show options that work for a specific Azure service.
+
+### Azure Data Studio (ADS) ###
+
+[Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/what-is?view=sql-server-ver15) (ADS) is a fairly new open-source, cross-platform tool to query and work with various Azure Data sources including SQL Server and Azure SQL. ADS supports a powerful concept called [notebooks](https://docs.microsoft.com/en-us/sql/azure-data-studio/notebooks-guidance?view=sql-server-ver15) which you will use in activities in this workshop.
+
+### APIs ###
+
+Since all Azure SQL services are based on the SQL Server engine, Azure SQL supports the [T-SQL language](https://docs.microsoft.com/en-us/sql/t-sql/language-reference?view=sql-server-ver15) and [TDS protocol](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-tds/b46a581a-39de-4745-b076-ec4dbb7d13ec). Therefore, all [drivers](https://docs.microsoft.com/en-us/sql/connect/sql-connection-libraries?view=sql-server-ver15) that normally work with SQL Server work with Azure SQL.
+
+In addition, Azure SQL supports specific [REST APIs](https://docs.microsoft.com/en-us/rest/api/sql/) for management of Managed Instances and Databases.
+
+### CLIs ###
+
+Popular command line interfaces such as [sqlcmd](https://docs.microsoft.com/en-us/sql/tools/sqlcmd-utility?view=sql-server-ver15) and [bcp](https://docs.microsoft.com/en-us/sql/tools/bcp-utility?view=sql-server-ver15) are supported with Azure SQL services.
+
+In addition, the [az CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) and [Azure Powershell cmdlets](https://docs.microsoft.com/en-us/powershell/azure/?view=azps-3.7.0) are supported for specific Azure SQL service scenarios. All of these CLIs are supported across Windows, macOS, and Linux clients. In addition, tools like sqlcmd and az are pre-installed in the [Azure Cloud Shell](https://azure.microsoft.com/en-us/features/cloud-shell/).
+
+
+<p style="border-bottom: 1px solid lightgrey;"></p>
 
 In this module, you learned about Azure SQL, including the deployment options, purchasing models, service tiers, and hardware choices. Hopefully, you also have a better understanding of what to choose when. In the next module, you'll learn more about deploying and configuring Azure SQL.  
 
