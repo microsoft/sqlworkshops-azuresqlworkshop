@@ -34,12 +34,55 @@ This explanation still remains valid today, though the capabilities around secur
 
 Since 2008, SQL Server has changed a lot and Azure SQL has changed a lot. It's no surprise then that the role of the SQL Server professional has also changed a lot. The goal of this course is to help SQL Server professionals translate their existing skills to become not only better SQL Server professionals, but also Azure SQL professionals.  
 
-
 <br>
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="1.2">1.2 Azure SQL Deployment Options</h2></a>
+
+In order to understand more "What is Azure SQL?" and deployment options it is important to know important terms from the Azure ecosystem.
+
+## The Azure Ecosystem ##
+
+The Azure ecosystem includes accounts, subscriptions, interfaces, resource management, and more for a wide variety of Azure services. Azure SQL is a family of services within the Azure ecosystem.
+
+### Azure Accounts and Subscriptions ###
+
+An Azure account is required to deploy and use Azure services. Each azure account has one or more subscriptions. Subscriptions provide a unit of billing and organization for Azure resources. You can read more about Azure subscription management in the [documentation](https://docs.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/initial-subscriptions).
+
+### Azure Portal ###
+
+The Azure Portal is the primary user interface to interact with the Azure ecosystem. The Azure Portal can be viewed with a [web browser](https://portal.azure.com), [Windows application](https://portal.azure.com/App/Download), or [mobile application](https://azure.microsoft.com/en-us/features/azure-portal/mobile-app).
+
+### Azure Marketplace ###
+
+All Azure services are consumed through a marketplace including Microsoft and 3rd party services. When you select an option in the portal to create a new resource from an Azure service you are using the Azure Marketplace.
+
+###  Azure APIs and CLIs ###
+
+All Azure services support Application Programming Interfaces (API). A common thread for all Azure Services is native support for a Representational State Transfer ([REST](https://docs.microsoft.com/en-us/rest/api/azure)) API. In addition, two common Command Line Interfaces (CLI) that work across Azure services are the [az CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) and [Powershell Azure cmdlets](https://docs.microsoft.com/en-us/powershell/azure).
+
+### Azure Resource Manager (ARM) ###
+
+Azure provides an infrastructure for all Azure services for deployment, management, security, and logging called the [Azure Resource Manager](https://azure.microsoft.com/en-us/features/resource-manager/) (ARM). One of the most common concepts provided by ARM you will use in this workshop is called a **resource group**. ARM also provides a system for automated deployments through ARM templates.
+
+### Azure Monitor ###
+
+The Azure ecosystem provides a system for Azure services to collect and manage metrics and events including a logging system called [Azure Monitor](https://docs.microsoft.com/en-us/azure/azure-monitor/overview). Logs can be queried using a common language called [Kusto](https://docs.microsoft.com/en-us/azure/kusto/query/) (KQL). Azure SQL integrates with the Azure Monitor system.
+
+### Azure Regions and Datacenters ###
+
+Azure services are deployed in a [global infrastructure](https://azure.microsoft.com/en-us/global-infrastructure/) in physical buildings called **datacenters**. Datacenters are organized in geographical locations around the world in [regions](https://azure.microsoft.com/en-us/global-infrastructure/regions/). For maximum availability, regions are often paired. Datacenters also provide additional layers of protection through a concept called an [availability zone](https://azure.microsoft.com/en-us/global-infrastructure/availability-zones/).
+
+### Azure SLA ###
+
+Formal documents called [Service-Level Agreements](https://azure.microsoft.com/en-us/support/legal/sla/) (SLAs) capture the specific terms that define the performance standards that apply to Azure.
+
+SLAs describe Microsoft's commitment to providing Azure customers with specific performance standards.
+There are SLAs for individual Azure products and services.
+SLAs also specify what happens if a service or product fails to perform to a governing SLA's specification. Azure SQL has specific SLAs that apply to availability and performance which you will learn about in this workshop.
+
+## What is Azure SQL? ##
 
 Within the umbrella of the "Azure SQL" term, there are many deployment options and choices to be made in order to tailor to various customers' needs. While there are a lot of options, this is not meant to confuse or complicate things, but rather to give customers the flexibility to get and pay for exactly what they need. This topic will cover some of the challenges and scenarios that lead to choosing various Azure SQL deployment options, as well as some of the technical specifications for each of those options. The deployment options discussed in this topic include Azure SQL virtual machines, Azure SQL managed instances, Azure SQL Databases, and Azure SQL "pools" (Azure SQL Instance Pools and Azure SQL Elastic Pools).  
 
