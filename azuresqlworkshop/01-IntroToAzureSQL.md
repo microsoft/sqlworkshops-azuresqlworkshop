@@ -65,7 +65,7 @@ All Azure services support Application Programming Interfaces (API). A common th
 
 ### Azure Resource Manager (ARM) ###
 
-Azure provides an infrastructure for all Azure services for deployment, management, security, and logging called the [Azure Resource Manager](https://azure.microsoft.com/en-us/features/resource-manager/) (ARM). One of the most common concepts provided by ARM you will use in this workshop is called a **resource group**. ARM also provides a system for automated deployments through ARM templates.
+Azure provides an infrastructure for all Azure services for deployment, management, security, and logging called the [Azure Resource Manager](https://azure.microsoft.com/en-us/features/resource-manager/) (ARM). One of the most common concepts provided by ARM you will use in this workshop is called a **resource group**. ARM also provides a system for automated deployments through ARM templates. ARM also provide a robust access control system called **Role Based Access Control (RBAC)**.
 
 ### Azure Monitor ###
 
@@ -73,7 +73,7 @@ The Azure ecosystem provides a system for Azure services to collect and manage m
 
 ### Azure Regions and Datacenters ###
 
-Azure services are deployed in a [global infrastructure](https://azure.microsoft.com/en-us/global-infrastructure/) in physical buildings called **datacenters**. Datacenters are organized in geographical locations around the world in [regions](https://azure.microsoft.com/en-us/global-infrastructure/regions/). For maximum availability, regions are often paired. Datacenters also provide additional layers of protection through a concept called an [availability zone](https://azure.microsoft.com/en-us/global-infrastructure/availability-zones/).
+Azure services are deployed in a [global infrastructure](https://azure.microsoft.com/en-us/global-infrastructure/) in physical buildings called **datacenters**. Datacenters are organized in geographical locations around the world in [regions](https://azure.microsoft.com/en-us/global-infrastructure/regions/). Your target for deployment will always be a region. For maximum availability, regions are often paired. Datacenters also provide additional layers of protection through a concept called an [availability zone](https://azure.microsoft.com/en-us/global-infrastructure/availability-zones/).
 
 ### Azure SLA ###
 
