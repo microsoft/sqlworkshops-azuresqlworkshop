@@ -91,7 +91,7 @@ Within the umbrella of the "Azure SQL" term, there are many deployment options a
 
 At the highest level, when you're considering your options, the first question you may ask is, "What level of scope do I want?" As you move from virtual machines to managed instances to databases, your management scope decreases. With virtual machines, you not only get access to but are also responsible for the OS and the SQL Server. With managed instance, the OS is abstracted from you and now you have access to only the SQL Server. And the highest abstraction is SQL database where you just get a database, and you don't have access to instance-level features or the OS.  
 
-## Azure SQL virtual machine
+## SQL Server on Azure virtual machine
 ![](../graphics/sqlvm.png)  
 *[Extended Security Updates](https://www.microsoft.com/en-us/cloud-platform/extended-security-updates) worth 75% of license every year for the next three years after End of Service (July 9, 2019). Applicable to Azure Marketplace images, customers using customer SQL Server 2008/R2 custom images can download the Extended Security Updates for free and manually apply.  
 **[GigaOm Performance Study](https://gigaom.com/report/sql-transaction-processing-price-performance-testing/)
