@@ -353,7 +353,7 @@ GO
 ```
 - Run the workload from the command line using ostress.
 
-This script will use 10 concurrent users running the workload query 2 times (Notice the script itself runs a single batch but loops 10,000 times to put the work on the server vs many client round trips)
+This script will use 10 concurrent users running the workload query 2 times (Notice the script itself runs a single batch but loops 10,000 times. It also assigned the result to a variable therefore eliminating almost all result set traffic to the client. This is not necessary but helps show a "pure" CPU workload run all on the server.)
 
 >**TIP:** If you are not seeing CPU usage behavior with this workload for your environment you can adjust the **-n parameter** for number of users and **-r parameter** for iterations.
 
