@@ -817,7 +817,7 @@ Run the test INSERT workload using the script **order_rating_insert_single.cmd**
 ```sql
 DECLARE @x int;
 SET @x = 0;
-WHILE (@x < 100)
+WHILE (@x < 500)
 BEGIN
 SET @x = @x + 1;
 INSERT INTO SalesLT.OrderRating
@@ -849,7 +849,7 @@ Using the queries in Step 2 you should observe the following:
 - The WRITELOG wait type is one of the highest count for wait types.
 - The avg time to write to the transaction log is somewhere around 2ms.
 
-The duration of this workload on a SQL Server 2019 instance with a SSD drive is somewhere around 15 seconds. The total duration using this on Azure SQL Database using a Gen5 v8core is around 32+ seconds. 
+The duration of this workload on a SQL Server 2019 instance with a SSD drive is somewhere around 15 seconds. The total duration using this on Azure SQL Database using a Gen5 v8core ~20 seconds. 
 
 WRITELOG wait types are indicative of latency flushing to the transaction log. 2ms per write doesn't seem like much but on a local SSD drive these waits may < 1ms.
 
@@ -871,7 +871,7 @@ The modified workload can be found in the script **order_rating_insert.sql**. Pr
 
 Run the modified workload using the script with ostress called **order_rating_insert.cmd** similar to how you ran the workload script in Step 3.
 
-Now the workload runs in almost 5 seconds compared to even 18-19 seconds with a local SSD using singleton transactions. This is an example of tuning an application for SQL queries that will run after in or outside of Azure.
+Now the workload runs in almost 2-5 seconds compared to even 18-19 seconds with a local SSD using singleton transactions. This is an example of tuning an application for SQL queries that will run after in or outside of Azure.
 
 The workload runs so fast it may be difficult to observe diagnostic data from queries used previously in this activity. It is important to note that sys.dm_os_wait_stats cannot be cleared using DBCC SQLPERF as it can be with SQL Server.
 
