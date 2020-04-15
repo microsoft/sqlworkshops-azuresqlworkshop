@@ -10,7 +10,7 @@
 
 > **IMPORTANT:** You must complete the [prerequisites](../azuresqlworkshop/00-Prerequisites.md) before completing activities in this module. You can also choose to audit the materials if you cannot complete the prerequisites. If you were provided an environment to use for the workshop, then you **do not need** to complete the prerequisites.
 
-You’ve been responsible for getting your SQL fast, keeping it fast, and making it fast again when something is wrong. In this module, we’ll show you how to leverage your existing performance skills, processes, and tools and apply them to Azure SQL, including taking advantage of the intelligence in Azure to keep your database tuned.
+You've been responsible for getting your SQL fast, keeping it fast, and making it fast again when something is wrong. In this module, we'll show you how to leverage your existing performance skills, processes, and tools and apply them to Azure SQL, including taking advantage of the intelligence in Azure to keep your database tuned.
 
 In each module you'll get more references, which you should follow up on to learn more. Also watch for links within the text - click on each one to explore that topic.
 
@@ -80,7 +80,7 @@ In this section you will learn how to perform common configuration and maintenan
 
 ### Configuring Tempdb
 
-- Always kept on local SSD drives so I/O perf shouldn’t be an issue.
+- Always kept on local SSD drives so I/O perf shouldn't be an issue.
 - For General Purpose tiers, we scale # files with vCores (2vcores=4 files,…) max of 16.
 - You get 12 files with Managed Instance independent of vCores but you can increase # files with T-SQL
 - MIXED_PAGE_ALLOCATION IS OFF and AUTOGROW_ALL_FILES is ON
@@ -98,7 +98,7 @@ Database configuration is very much like SQL Server with some differences for Az
 - Managed Instance supports adding files and sizes but not physical placement.
 
     The number of files and file size can be used to tune I/O performance. Read more [here](https://techcommunity.microsoft.com/t5/datacat/storage-performance-best-practices-and-considerations-for-azure/ba-p/305525). 
-    User defined FILEGROUP not supported but you can’t physically place files anyway.
+    User defined FILEGROUP not supported but you can't physically place files anyway.
 
 **Configuring MAXDOP**
 
@@ -220,7 +220,7 @@ PAGELATCH waits are just like SQL Server.
 
 **Buffer Pool Limits**
 
-- Target is set to around “limit” in the docs – 3Gb.
+- Target is set to around "limit" in the docs – 3Gb.
 - You cannot control max or min server memory
 - Managed Instance supports RG
 
@@ -332,18 +332,28 @@ Edit the script that runs ostress **sqlworkload.cmd**:<br>
 This database is not large so the query to retrieve customer and their associated sales information ordered by customers with the most sales shouldn't generate a large result set. It is possible to tune this query by reducing the number of columns from the result set but these are needed for demonstration purposes of this activity.
 
 ```sql
-SELECT c.*, soh.OrderDate, soh.DueDate, soh.ShipDate, soh.Status, soh.ShipToAddressID, soh.BillToAddressID, soh.ShipMethod, soh.TotalDue, soh.Comment, sod.*
+DECLARE @x int
+DECLARE @y float
+SET @x = 0;
+WHILE (@x < 10000)
+BEGIN
+SELECT @y = sum(cast((soh.SubTotal*soh.TaxAmt*soh.TotalDue) as float))
 FROM SalesLT.Customer c
 INNER JOIN SalesLT.SalesOrderHeader soh
 ON c.CustomerID = soh.CustomerID
 INNER JOIN SalesLT.SalesOrderDetail sod
 ON soh.SalesOrderID = sod.SalesOrderID
-ORDER BY sod.LineTotal desc;
+INNER JOIN SalesLT.Product p
+ON p.ProductID = sod.ProductID
+GROUP BY c.CompanyName
+ORDER BY c.CompanyName;
+SET @x = @x + 1;
+END
 GO
 ```
 - Run the workload from the command line using ostress.
 
-This script will use 10 concurrent users running the workload query 2500 times.
+This script will use 10 concurrent users running the workload query 2 times (Notice the script itself runs a single batch but loops 10,000 times to put the work on the server vs many client round trips)
 
 >**TIP:** If you are not seeing CPU usage behavior with this workload for your environment you can adjust the **-n parameter** for number of users and **-r parameter** for iterations.
 
@@ -371,7 +381,7 @@ Your screen at the command prompt should look similar to the following
 [datetime] [ostress PID] -dAdventureWorks0406
 [datetime] [ostress PID] -P********
 [datetime] [ostress PID] -n10
-[datetime] [ostress PID] -r2500
+[datetime] [ostress PID] -r2
 [datetime] [ostress PID] -q
 [datetime] [ostress PID] Using language id (LCID): 1024 [English_United States.1252] for character formatting with NLS: 0x0006020F and Defined: 0x0006020F
 [datetime] [ostress PID] Default driver: SQL Server Native Client 11.0
@@ -710,7 +720,7 @@ You will see there are more queries with a status of RUNNING (less RUNNABLE alth
 
 - Observe the new workload duration.
 
-The workload duration from **sqlworkload.cmd** should now be much less and somewhere ~30 seconds to 1 minute.
+The workload duration from **sqlworkload.cmd** should now be much less and somewhere ~30 seconds.
 
 - Observe Query Store reports
 
