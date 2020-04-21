@@ -75,13 +75,15 @@ The Azure ecosystem provides a system for Azure services to collect and manage m
 
 Azure services are deployed in a [global infrastructure](https://azure.microsoft.com/en-us/global-infrastructure/) in physical buildings called **datacenters**. Datacenters are organized in geographical locations around the world in [regions](https://azure.microsoft.com/en-us/global-infrastructure/regions/). Your target for deployment will always be a region. For maximum availability, regions are often paired. Datacenters also provide additional layers of protection through a concept called an [availability zone](https://azure.microsoft.com/en-us/global-infrastructure/availability-zones/).
 
-### Azure SLA ###
+### Azure SLA, Compliance, and Trust ###
 
-Formal documents called [Service-Level Agreements](https://azure.microsoft.com/en-us/support/legal/sla/) (SLAs) capture the specific terms that define the performance standards that apply to Azure.
+Formal documents called [Service-Level Agreements](https://azure.microsoft.com/en-us/support/legal/sla/) (**SLAs**) capture the specific terms that define the performance standards that apply to Azure.
 
 SLAs describe Microsoft's commitment to providing Azure customers with specific performance standards.
 There are SLAs for individual Azure products and services.
 SLAs also specify what happens if a service or product fails to perform to a governing SLA's specification. Azure SQL has specific SLAs that apply to availability and performance which you will learn about in this workshop.
+
+Many customers new to the cloud are concerned about compliance and trust, especially for data. Azure has more than 90 **compliance certifications** including 50 specific to global regions and 35 specific to the needs of key industries. Read more details about [Azure compliance offerings and trust](https://azure.microsoft.com/en-us/overview/trusted-cloud).
 
 ## What is Azure SQL? ##
 
