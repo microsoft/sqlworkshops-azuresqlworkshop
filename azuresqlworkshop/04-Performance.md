@@ -18,8 +18,8 @@ In each module you'll get more references, which you should follow up on to lear
 
 In this module, you'll cover these topics:
 
-[4.1](#4.1): Azure SQL performance **capabilities**<br>
-[4.2](#4.2): **Configuring and Maintaining** for Performance<br>
+[4.1](#4.1): Azure SQL **performance capabilities and tasks**<br>
+[4.2](#4.2): **Configuring and Maintaining for Performance**<br>
 [4.3](#4.3): **Monitoring and troubleshooting performance** in Azure SQL<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Activity 1](#1): How to monitor performance in Azure SQL Database  
 [4.4](#4.4): **Accelerating and Tuning Performance** in Azure SQL<br>
@@ -32,21 +32,19 @@ In this module, you'll cover these topics:
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="4.1">4.1  Azure SQL performance capabilities</h2></a>
 
-In this section you will learn the performance capabilities of Azure SQL.
+Let's start by looking at some of the performance capabilities of Azure SQL as compared to SQL Server.
 
-### Memory, CPU, I/O capacities
+Since Azure SQL Database and Managed Instance are based on the SQL Server database engine, most of the capabilities that come with SQL Server are also available with Azure SQL. There are a few capabilities that have an impact on the performance of your databases that you should consider when deploying and configuring Azure SQL including maximum capacities, indexes, In-Memory OLTP, partitions, SQL Server 2019 enhancements, and Intelligent Performance capabilities.
 
-**Azure SQL Database**
+### Memory, CPU, and I/O capacities
 
-Up to 128 vCores and 4TB Memory and 4TB Database (data).
+Choosing the right deployment and service tier for Azure SQL Database or Managed Instance can be important for performance. In second Module you learned about the various deployment options for Azure SQL. Consider these important maximum capacities as part of your deployment:
 
-Hyperscale supports 100TB databases.
-
-**Azure SQL Database Managed Instance**
-
-Up to 80 vCores, 400GB Memory, and 8TB Database (data)
-
-The # of vCores and pricing tier also affects other resource capacities.
+- Azure SQL Database can support up to 128 vCores, 4TB Memory, and a 4TB Database size.
+- The Hyperscale deployment option supports up to 100TB databases.
+- Azure SQL Managed Instance can support up to 80 vCores, 400Gb Memory, and a 8TB Database size.
+- The # of vCores and service tier also affects other resource capacities (Ex. maximum transaction log rates)
+- Windows Job Objects are used to support certain resource limits such as memory. Use **sys.dm_os_job_object** to find true capacities for your deployment.
 
 Here are resources for you to review these capacities:
 
@@ -56,210 +54,319 @@ Here are resources for you to review these capacities:
 
 ### Indexes
 
-- All index types are supported across Azure SQL.
-- Online and resumable indexes fully supported
-- Columnstore Indexes available in almost all tiers
+Indexes are often critical to query performance for SQL Server and that is not different for Azure SQL. Here are important points to consider about indexes and Azure SQL:
+
+- All index types, clustered and non-clustered, are supported across Azure SQL.
+- Online and resumable indexes are fully supported. Online and resumable indexes can be critical for maximum availability.
+- Columnstore indexes are available in almost all service tiers. Check the documentation for any exceptions.
 
 ### In-Memory OLTP
 
-Memory optimized tables are only available in Business Critical Tiers. The Memory Optimized FILEGROUP is pre-created in Azure SQL Database and Managed Instance when a database is created. The amount of memory for memory optimized tables is a % of the memory limit which is vCore dependent.
+In-Memory OLTP is a capability for transaction latency sensitive applications, such as applications that involve a high number of concurrent users modifying data. Here are important points related to In-Memory OLTP and Azure SQL:
+
+- Memory optimized tables are only available in Business Critical Tiers.
+- The memory optimized FILEGROUP is pre-created in Azure SQL Database and Managed Instance when a database is created (even for General Purpose tiers).
+- The amount of memory for memory optimized tables is a percentage of the vCore dependent memory limit.
 
 ### Partitions
 
-Partitions are supported for Azure SQL Database and Managed Instance. However, partitions can only use filegroups with Managed Instance.
+Partitions are often used with SQL Server for tables with a large number of rows to improve performance by sub-dividing data by a column in the table. Consider these points for partitions and Azure SQL:
 
-### Intelligent Performance
+- Partitions are supported for Azure SQL Database and Managed Instance.
+- You can only use filegroups with partitions with Azure SQL Managed Instance.
 
-Intelligent performance covers capabilities in Azure SQL that include Intelligent Query Processing, Automatic Plan Correction, and Automatic Tuning. Section 4.5 of this module covers all the details of these capabilities.
+### SQL Server 2019 performance enhancements
+
+Many of the new enhancements for performance in SQL Server 2019 such as Intelligent Query Processing are available in Azure SQL. However, not all specific improvements are yet in Azure SQL. For example, Tempdb Metadata Optimization is still planned for Azure SQL but not available yet.
+
+### Intelligent performance
+
+Intelligent performance covers capabilities in Azure SQL that include intelligent query processing, automatic plan correction, and automatic tuning (including indexes). You will learn more about these features in a later unit.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="4.2">4.2  Configuring and Maintaining for Performance</h2></a>
 
-In this section you will learn how to perform common configuration and maintenance tasks for performance for Azure SQL:
+Understanding the capabilities of Azure SQL is important for delivering consistent performance. It is also important to understand what options and restrictions you have to configure Azure SQL Managed Instance and Databases that can impact performance. This includes topics of the tempdb database, configuring databases, configuring files and filegroups, configuring max degree of parallelism, using Resource Governor, and maintaining indexes and statistics.
 
 ### Configuring Tempdb
 
-- Always kept on local SSD drives so I/O perf shouldn't be an issue.
-- For General Purpose tiers, we scale # files with vCores (2vcores=4 files,…) max of 16.
-- You get 12 files with Managed Instance independent of vCores but you can increase # files with T-SQL
-- MIXED_PAGE_ALLOCATION IS OFF and AUTOGROW_ALL_FILES is ON
-- Tempdb Metadata Optimization not supported
+Tempdb is an important shared resource used by applications. Ensuring the right configuration of tempdb can affect your ability to deliver consistent performance. Tempdb is used the same with Azure SQL like SQL Server but your ability to configure tempdb is different including placement of files, the number and size of files, and tempdb configuration options.
+
+Tempdb files are always automatically stored on local SSD drives so I/O performance shouldn't be an issue.
+
+SQL Server professionals often use more than one database file to partition allocations for tempdb tables.  For Azure SQL Database, the number of files are scaled with the number of vCores (Ex. 2 vCores=4 files,…) with a max of 16. The number of files is not configurable through T-SQL against tempdb but by changing the deployment option. The maximum size of tempdb is scaled per number of vCores. You get 12 files with Azure SQL Managed Instance independent of vCores and you cannot change this number. We are looking in the future to allow configuration of the number of files for Azure SQL Managed Instance.
+
+Database options MIXED_PAGE_ALLOCATION is set to OFF and AUTOGROW_ALL_FILES is set to ON. This cannot be configured but they are the recommended defaults as with SQL Server.
+
+Currently, the Tempdb Metadata Optimization feature in SQL Server 2019, which can alleviate heavy latch contention, is not available in Azure SQL but is planned for the future.
 
 ### Database Configuration
 
-Database configuration is very much like SQL Server with some differences for Azure SQL. Consider these common topics for database configuration for performance.
+Database configuration is most commonly done with the T-SQL ALTER DATABASE and ALTER DATABASE SCOPED CONFIGURATION statements. Many of the configuration options for performance are available for Azure SQL. Consult the ALTER DATABASE T-SQL reference for the differences between SQL Server, Azure SQL Database, and Azure SQL Managed Instance.
 
-- Only full recovery supported so minimal logging for bulk operations not possible
+For performance, one option that is not available to change is the recovery model of the database. The default is full recovery and cannot be modified. This ensures your database can meet Azure service level agreements (SLAs). Therefore, minimal logging for bulk operations is not supported. Minimal logging for bulk operations is supported for tempdb.
 
 **Configuring Files and File Groups**
 
-- Azure SQL Database does not support any modification or creation of files or filegroups.
-- Managed Instance supports adding files and sizes but not physical placement.
+SQL Server professionals often use files and filegroups to improve I/O performance through physical file placement. Azure SQL does not allow users to place files on specific disk systems. However, Azure SQL has resource commitments for I/O performance with regards to rates, IOPS, and latencies so abstracting the user from physical file placement can be a benefit.
 
-    The number of files and file size can be used to tune I/O performance. Read more [here](https://techcommunity.microsoft.com/t5/datacat/storage-performance-best-practices-and-considerations-for-azure/ba-p/305525). 
-    User defined FILEGROUP not supported but you can't physically place files anyway.
+Azure SQL Database only has one database file (Hyperscale many have several) and the size is configured through Azure interfaces. There is no functionality to create additional files.
+
+Azure SQL Managed Instance supports adding database files and configuring sizes but not physical placement of files. The number of files and file sizes for Azure SQL Managed Instance can be used to improve I/O performance. Read more [here](https://techcommunity.microsoft.com/t5/datacat/storage-performance-best-practices-and-considerations-for-azure/ba-p/305525). 
+
+In addition, user defined filegroups are supported for Azure SQL Managed Instance for manageability purposes.
 
 **Configuring MAXDOP**
 
-Degree of parallelism works exactly the same in the engine for Azure SQL as SQL Server. You can configure max degree of parallelism (MAXDOP) similar to SQL Server:
+Max degree of parallelism (MAXDOP), which can affect the performance of individual queries, works exactly the same in the engine for Azure SQL as SQL Server. The ability to configure MAXDOP may be important to delivering consistent performance in Azure SQL. You can configure MAXDOP in Azure SQL similar to SQL Server using the following techniques:
 
 - ALTER DATABASE SCOPED CONFIGURATION to configure MAXDOP is supported for Azure SQL
 - sp_configure for 'max degree of parallelism' is supported for Managed Instance.
-- MAXDOP Query hints fully supported
-- Configuring MAXDOP with Resource Governor is supported only for Managed Instance
+- MAXDOP query hints are fully supported
+- Configuring MAXDOP with Resource Governor is supported for Managed Instance.
 
-### Maintaining Indexes
+### Resource Governor
 
-Index creation and maintenance for Azure SQL is exactly the same as SQL Server.
+Resource Governor is a feature in SQL Server that can be used to control resource usage for workloads through I/O, CPU, and memory. While Resource Governor is used behind the scenes for Azure SQL Database, Resource Governor is only supported for Azure SQL Managed Instance for user defined workload groups and pools.
 
-For example, rebuilding and reorganization of indexes fully supported as with SQL Server.
+### Maintaining indexes
 
-### Maintaining Statistics
+Index creation and maintenance for Azure SQL is exactly the same as SQL Server. For example, creating, rebuilding and reorganization of indexes is fully supported as with SQL Server. This includes online and resumable indexes..
 
-Statistics were the same for Azure SQL as with SQL Server. Automatic statistics options for databases are available just like SQL Server.
+### Maintaining statistics
+
+Statistics are the same for Azure SQL as with SQL Server. Automatic statistics options for databases are available for Azure SQL just like SQL Server.
+
+Now that you have learned some of the configuration and maintenance options for performance for Azure SQL, complete the following knowledge check before proceeding to the next unit.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="4.3">4.3 Monitoring and troubleshooting performance in Azure SQL</h2></a>
 
-In this section you will learn how to monitor the performance of a SQL workload using tools and techniques both familiar to the SQL Server professional along with differences with Azure SQL.
+Monitoring and troubleshooting is a key element to deliver consistent performance. Azure SQL has the same tools and features as SQL Server to monitor and troubleshoot performance plus additional capabilities. This includes features like Dynamic Management Views (DMV), Extended Events, and Azure Monitor. It is also important to learn how to use these tools and capabilities across various performance scenarios for Azure SQL like high CPU or resource wait types.
 
 An activity is included in this section to show you how to use familiar and new tools to monitor performance with azure SQL.
 
-### Monitoring and Troubleshooting Performance Tools
+## Monitoring and Troubleshooting Performance Tools
 
-**Azure Monitor Metrics and Logs**
+Azure SQL provides monitoring and troubleshooting capabilities in the Azure ecosystem as well familiar tools that come with SQL Server. These include the following:
 
-- Metrics and events specific to Azure SQL
-- Metrics and events for Azure resources
+### Azure Monitor
 
-**Dynamic Management Views (DMV)**
+Azure Monitor is part of the Azure ecosystem and Azure SQL is integrated to support Azure Metrics, Alerts, and Logs. Azure Monitor data can be visualized in the Azure Portal or accessed by applications through Azure Event Hub or APIs. An example of why Azure Monitor is important is accessing resource usage metrics for Azure SQL outside of SQL Server tools much like Windows Performance Monitor.
 
-- For Azure SQL Database many of these need to run in the context of the user database.
-- Some DMVs unique to Azure SQL.
-- Number of DMVs available different for SQL Server, Azure SQL Database, and Managed Instance.
+### Dynamic Management Views (DMV)
 
-**Query Store**
+Azure SQL provides the same DMV infrastructure as with SQL Server with a few differences. DMVs are a crucial aspect to performance monitoring since you can view key SQL Server performance data using standard T-SQL queries. Information such as active queries, resource usage, query plans, and resource wait types. Learn more details about DMVs with Azure SQL later in this unit.
 
-- Performance Overview and Query Performance Insights in portal uses Query Store
-- Catalog views and SSMS Reports work just like SQL Server
+### Extended Events
 
-**Extended Events**
+Azure SQL provides the same Extended Events infrastructure as with SQL Server with a few differences. Extended Events is a method to trace key events of execution within SQL Server that powers Azure SQL. For performance, extended events allow you to trace the execution of individual queries. Learn more details about Extended Events with Azure SQL later in this unit.
 
-- Azure SQL DB supports file, ring_buffer, and counter targets. File targets stored in Azure Blob Storage
-- Azure MI supports all targets of SQL Server
-- Azure SQL DB supports a subset of SQL Server events plus Azure specific events
-- Azure SQL MI supports all SQL Server events plus other Azure specific events
+### Lightweight Query Profiling
 
-### Using Monitoring and Troubleshooting Performance Tools
+Lightweight Query Profiling is a capability to examine the query plan and running state of an active query. This is a key feature to debug query performance for statements as they are running. This capability cuts down the time for you to solve performance problems vs using tools like Extended Events to trace query performance. Lightweight Query Profiling is accessed through DMVs and is on by default for Azure SQL just like SQL Server 2019.
 
-**Monitoring Resource Usage**
+### Query Plan Debugging
 
-- Azure Metrics and Logging
-- sys.dm_db_resource_stats
-- sys.dm_os_performance_counters
+In some situations, you may need additional details about query performance for an individual T-SQL statement. T-SQL SET statements such as SHOWPLAN and STATISTICS can provide these details and are fully supported for Azure SQL as they are for SQL Server.
 
-**Monitoring Query Performance**
+### Query Store
 
-- sys.dm_exec_requests and sys.dm_exec_query_stats
-- Query Performance Insights in Portal for Azure DB.
-- Query Store
+Query Store is a historical record of performance execution for queries stored in the user database. Query Store is on by default for Azure SQL and is used to provide capabilities such as Automatic Plan Correction and Automatic Tuning. SQL Server Management Studio (SSMS) reports for Query Store are available for Azure SQL. These reports can be used to find top resource consuming queries including query plan differences and top wait types to look at resource wait scenarios.
 
-**Monitoring I/O and Memory**
+### Performance Visualizations
 
-- sys.dm_io_virtual_file_stats
-- sys.dm_os_memory_clerks (differences between SQL, DB, and MI)
-- sys.dm_os_performance_counters
-- sys.dm_db_resource_stats
+For Azure SQL Database, we have integrated Query Store performance information into the Azure Portal through visualizations. This way you can see some of the same information for Query Store as you would with a client tool like SSMS by just using the Azure Portal with an option called **Query Performance Insight**.
 
-**Monitoring Waits**
+## Dynamic Management Views (DMV) details
 
-- sys.dm_os_wait_stats
-- sys.dm_db_wait_stats for Azure SQL Database and Managed Instance. Only shows stats > 0 specific to a database.
+Dynamic Management Views (DMV) have been a driving force to monitor and troubleshoot performance for many years with SQL Server. Common DMVs for SQL Server are available with Azure SQL and some additional ones specific to Azure.
 
-**Tracing Query Performance**
+### Azure SQL Managed Instance
 
-- Extended Events.
-- SET STATISTIC TIME supported.
+All DMVs for SQL Server are available for Managed Instance. Key DMVs like **sys.dm_exec_requests** and **sys.dm_os_wait_stats** are commonly used to examine query performance.
 
-**Debugging Query Plans**
+One DMV is specific to Azure called **sys.server_resource_stats** and shows historical resource usage for the Managed Instance. This is an important DMV to see resource usage since you do not have direct access to OS tools like Performance Monitor.
 
-- Lightweight Query Profiling on by default (Activity Monitor and trace flags not supported).
-- SET SHOWPLAN and SSMS query plans all available.
+### Azure SQL Database
+
+Most of the common DMVs you need for performance including **sys.dm_exec_requests** and **sys.dm_os_wait_stats** are available. It is important to know that these DMVs only provide information specific to the database and not across all databases for a logical server.
+
+**sys.dm_db_resource_stats**  is a DMV specific to Azure SQL Database and can be used to view a history of resource usage for the database. Use this DMV similar to how you would use sys.server_resource_stats for a Managed Instance.
+
+**sys.elastic_pool_resource_stats** is similar to sys.dm_db_resource_stats but can be used to view resource usage for elastic pool databases.
+
+### DMVs you will need
+
+There are a few DMVs worth calling out you will need to solve certain performance scenarios for Azure SQL including:
+
+- **sys.dm_io_virtual_file_stats** is important for Azure SQL since you don't have direct access to operating system metrics for I/O performance per file.
+- **sys.dm_os_performance_counters** is available for both Azure SQL Database and Managed Instance to see SQL Server common performance metrics. This can be used to view SQL Server Performance Counter information that is typically available in Performance Monitor.
+- **sys.dm_instance_resource_governance** can be used to view resource limits for a Managed Instance. You can view this information to see what your expected resource limits should be without using the Azure portal.
+- **sys.dm_user_db_resource_governance** can be used to see common resource limits per the deployment option, service tier, and size for your Azure SQL Database deployment. You can view this information to see what your expected resource limits should be without using the Azure portal.
+
+### DMVs for deep troubleshooting
+
+These DMVs provide deeper insight into resource limits and resource governance for Azure SQL. They are not meant to be used for common scenarios but might be helpful when looking deep into complex performance problems. Consult the documentation for all the details of these DMVs:
+
+- **sys.dm_user_db_resource_governance_internal**
+- **sys.dm_resource_governor_resource_pools_history_ex**
+- **sys.dm_resource_governor_workload_groups_history_ex**
+
+## Extended Events details
+
+Extended Events is the tracing mechanism for SQL Server. Extended events for Azure SQL is based on the SQL Server engine and therefore is the same for Azure SQL with a few notable differences:
+
+### Extended Events for Azure SQL Database
+
+Extended Events can be used for Azure SQL Database just like SQL Server by creating sessions and using events, actions, and targets. Keep these important points in mind when creating extended event sessions:
+
+- Most commonly used Events and Actions are supported
+- File, ring_buffer, and counter targets are supported
+- File targets are supported with Azure Blob Storage since you don't have access to the underlying operating system disks.
+
+You can use SSMS or T-SQL to create and start sessions. You can use SSMS to view extended event session target data or the system function **sys.fn_xe_file_target_read_file**. 
+
+> [!NOTE]
+> Note that the ability with SSMS to View Live Data is not available for Azure SQL Database.
+
+It is important to know that any extended events fired for your sessions are specific to your database and not across the logical server.
+
+### Extended Events for Azure SQL Managed Instance
+
+Extended Events can be used for Azure SQL Managed Instance just like SQL Server by creating sessions and using events, actions, and targets. Keep these important points in mind when creating extended event sessions:
+
+- All events, targets, and actions are supported
+- File targets are supported with Azure Blob Storage since you don't have access to the underlying operating system disks.
+- Some specific events are added for Managed Instance to trace events specific to the management and execution of the instance.
+
+You can use SSMS or T-SQL to create and start sessions. You can use SSMS to view extended event session target data or the system function **sys.fn_xe_file_target_read_file**. The ability with SSMS to View Live Data is supported for Managed Instance.
+
+## Performance Scenarios for Azure SQL
+
+In order to decide how to apply monitoring and troubleshooting performance tools and capabilities, it is important to look at performance for Azure SQL through *scenarios*.
+
 
 ### Common Performance Scenarios
 
-**Running vs Waiting**
+A common technique for SQL Server performance troubleshooting is to examine if a performance problem is **Running** (high CPU) or **Waiting** (waiting on a resource). This is a way to "divide and conquer" a performance problem for SQL which can often be vague (i.e. "it is slow"). Read more about this technique in our [documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-monitor-tune-overview#troubleshoot-performance-problems).
 
-Use Running vs Waiting "methodology" as you would SQL Server. Read more about this technique in our [documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-monitor-tune-overview#troubleshoot-performance-problems).
+The following diagram shows a common decision tree to determine if a SQL performance issue is running or waiting and how to use common performance tools to determine the cause and solution.
 
-**Blocking and Deadlocking**
+![runningvswaiting](../graphics/4-running-vs-waiting.png)
 
-Resolve blocking and deadlocking just as you would SQL Server. The system_health Extended Events session that includes deadlocks is available with Azure SQL Managed Instance.
+Let's dive more into the details of each aspect of the diagram.
 
-**High CPU Utilization**
+#### Running vs Waiting
 
-High CPU typically requires query tuning or more CPU resources.
+Running or waiting scenarios can often be determined by looking at overall resource usage. For a standard SQL Server deployment you might use tools such as Performance Monitor in Windows or top in Linux. For Azure SQL, you can use the following methods:
 
-**PAGEIOLATCH and WRITELOG waits**
+- Azure Portal/Powershell/Alerts
 
-- PAGEIOLATCH and WRITELOG high wait times may require change to Pricing Tier to get better IOPs and/or latency.
-- For Managed Instance, # files and/or file size can help with IOPs and I/O throttling
-- Business Critical is always the best for I/O sensitive applications
-- You may not have enough memory so move up tier or cores to get more
-- Applications may not be tuned such as singleton transactions or scans
+    Azure Monitor has integrated metrics to view resource usage for Azure SQL. You can also setup alerts to look for resource usage conditions.
 
-**PAGELATCH waits**
+- sys.dm_db_resource_stats
 
-PAGELATCH waits are just like SQL Server.
+    For Azure SQL Database, you can look at this DMV to see CPU, memory, and I/O resource usage for the database deployment. This DMV takes a snapshot of this data every 15 seconds.
 
-**CHECKPOINT and I/O**
+- sys.server_resource_stats
 
-- Databases use indirect checkpoints
+    This DMV behaves just like sys.dm_db_resource_stats but it used to see resource usage for the Managed Instance for CPU, memory, and I/O. This DMV also takes a snapshot every 15 seconds.
 
-**Buffer Pool Limits**
+#### Running
 
-- Target is set to around "limit" in the docs – 3Gb.
-- You cannot control max or min server memory
-- Managed Instance supports RG
+If you have determined the problem is high CPU utilization, this is called a running scenario. A running scenario can involve queries that consume resources through compilation or execution. Further analysis to determine a solution can be done by using these tools:
 
-**Memory Grants**
+- Query Store
 
-- Over and underestimate can still be an issue
-- Resource Governor control exists for Managed Instance.
+    Use the Top Consuming Resource reports in SSMS, Query Store catalog views, or Query Performance Insight in the Azure Portal (Azure SQL Database only) to find which queries are consuming the most CPU resources.
 
-**Plan Cache Issues**
+- sys.dm_exec_requests
 
-- Memory brokers still exist as with SQL Server.
-- FORCED_PARAMETERIZATION supported for Database and Managed Instance.
-- sp_configure option 'optimized for ad hoc workloads' supported in Managed Instance but not in Azure SQL Database.
+    Use this DMV in Azure SQL to get a snapshot of the state of active queries. Look for queries with a state of RUNNABLE and a wait type of SOS_SCHEDULER_YIELD to see if you have enough CPU capacity.
 
-### Azure Specific Performance Scenarios
+- sys.dm_exec_query_stats
 
-**DTU Governance**
+    This DMV can be used much like Query Store to find top resource consuming queries but only is available for query plans that are cached where Query Store provides a persistent historical record of performance. This DMV also allows you to find the query plan for a cached query.
 
-- Throttling
-- IO_QUEUE_LIMIT wait
+- sys.dm_exec_procedure stats
 
-**Transaction Log Governance**
+    This DMV provides information much like sys.dm_exec_query_stats except the performance information can be viewed at the stored procedure level.
 
-- LOG_RATE_GOVERNOR wait
-- INSTANCE_LOG_GOVERNOR wait
+    Once you determine what query or queries are consuming the most resources, you may have to examine whether you have enough CPU resources for your workload or debug query plans with tools like Lightweight Query Profiling, SET statements, Query Store, or Extended Events tracing.
 
-**Worker Limits**
+#### Waiting
 
-- Error when concurrent worker limit reached for Azure SQL Database.
-- Managed Instance = SQL Server 'max worker threads' and THREADPOOL waits.
+If your problem doesn't appear to be a high CPU resource usage, it could be the performance problem involves waiting on a resource. Scenarios involving waiting on resources include:
 
-**Managed Instance HADR Waits**
+- I/O Waits
+- Lock Waits
+- Latch Waits
+- Buffer Pool limits
+- Memory Grants
+- Plan Cache Eviction
 
-HADR_DATABASE_FLOW_CONTROL and HADR_THROTTLE_LOG_RATE_SEND_RECV wait increase possible to ensure HA SLAs.
+To perform analysis on waiting scenarios you typically look at the following tools:
 
-**Be Aware Of...**
+- sys.dm_os_wait_stats
 
-Business Critical have AG replicas on by default so you may see unexpected HADR_SYNC_COMMIT waits.
+    Use this DMV to see what are the top wait types for the database or instance. This can guide you on what action to take next depending on the top wait types.
 
+- sys.dm_exec_requests
+
+    Use this DMV to find specific wait types for active queries to see what resource they are waiting on. This could be a standard blocking scenario waiting on locks from other users.
+
+- sys.dm_os_waiting_tasks
+
+    Queries that use parallelism use multiple tasks for a given query so you may need to use this DMV to find wait types for a given task for a specific query.
+
+- Query Store
+
+    Query Store provides reports and catalog views that show an aggregation of the top waits for query plan execution. It is important to know that a wait of **CPU** is equivalent to a *running* problem.
+
+> [!TIP]
+> Extended Events can be used for any running or waiting scenarios but requires you to setup an extended events session to trace queries and can be considered a *heavier* method to debug a performance problem.
+
+### Scenarios specific to Azure SQL
+
+There are some performance scenarios, both running and waiting, that are specific to Azure SQL including log governance, worker limits, waits encountered using Business Critical service tiers, and waits specific to a Hyperscale deployment.
+
+#### Log governance
+
+Azure SQL can enforce resource limits on transaction log usage called *log rate governance*. This enforcement is often needed to ensure resource limits and to meet promised SLA. Log governance may be seen from the following wait types:
+
+- LOG_RATE_GOVERNOR - waits for Azure SQL Database
+- POOL_LOG_RATE_GOVERNOR - waits for Elastic Pools
+- INSTANCE_LOG_GOVERNOR - waits for Azure SQL Managed Instance
+- HADR_THROTTLE_LOG_RATE* - waits for Business Critical and Geo-Replication latency
+
+#### Worker limits
+
+SQL Server uses a worker pool of threads but has limits on the maximum number of workers. Applications with a large number of concurrent users may need a certain number of workers. Keep these points in mind on how worker limits are enforced for Azure SQL Database and Managed Instance:
+
+- Azure SQL Database has limits based on service tier and size. If you exceed this limit, a new query would receive an error.
+- Azure SQL Managed Instance uses 'max worker threads' so workers past this limit may see THREADPOOL waits.
+
+> [!NOTE]
+> Managed Instance in the future may enforce worker limits similar to Azure SQL Database.
+
+#### Business Critical HADR Waits
+
+If you use a Business Critical (BC) service tier you may *unexpectedly* see the following wait types:
+
+- HADR_SYNC_COMMIT
+- HADR_DATABASE_FLOW_CONTROL
+- HADR_THROTTLE_LOG_RATE_SEND_RECV
+
+Even though these waits may not slow down your application you may not be expecting to see these since they are specific to using an Always On Availability Group (AG). (BC) tiers use AG technology behind the scenes to implement SLA and availability features of a BC service tier.
+
+#### Hyperscale
+
+The Hyperscale architecture can result in some unique performance wait types that are prefixed with **RBIO**. In addition, DMVs, catalog views, and Extended Events have been enhanced to show metrics for Page Server reads.
+
+You will now learn in an exercise how to monitor and solve a performance problem for Azure SQL using the tools and knowledge you have gained in this unit.
 To further your knowledge of monitoring and troubleshooting performance with Azure SQL, complete the following Activity.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
@@ -532,43 +639,49 @@ Azure Monitor Logs have a delay when first configuring log diagnostics for a dat
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="4.4">4.4 Accelerating and Tuning Performance in Azure SQL</h2></a>
 
-In this section you will learn how to improve the performance of a SQL workload in Azure SQL using your knowledge of SQL Server and gained knowledge from Module 4.3.
+Understanding your options to accelerate and tune performance for Azure SQL is key to going further to deliver consistent performance. This includes understanding how to scale CPU capacity, increase I/O performance, configuring memory and workers, improving application latency, and applying standard SQL Server tuning best practices. Here is a great reference while you read this section: [Improving Database Performance](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-monitor-tune-overview#improve-database-performance-with-more-resources)
 
-Use the following documentation a supplemental guide for this section: [Improving Database Performance](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-monitor-tune-overview#improve-database-performance-with-more-resources)
+### Scaling CPU Capacity
 
-One of the most important points to consider as you think about improving performance in Azure SQL is that in many cases application and query performing tuning is the best method. This includes:
+You may need to scale the number of CPUs for your resource needs. For an on-premises environment, this would require you to reconfigure a VM, change hardware, and even migrate your database. Azure SQL allows you to do this with no migration on your part. You can use the portal, T-SQL, CLI, or REST APIs to scale your number of vCores up or down for your deployment.
 
-- Well designed Indexes
-- Using Batching
-- Using Stored Procedures
-- Using Parameterization
-- Correctly processing result sets
+Downtime is typically required but can be very fast for Azure SQL Database with no migration. Hyperscale deployments allow you to scale up in constant time regardless of data size and Serverless allows for autoscaling based on CPU demand.
 
-With that mind, consider these techniques to improve performance using Azure SQL:
+> [!NOTE]
+> Managed Instance scaling can take significant time but does not require any migration.
 
-**Scaling CPU Capacity**
+### I/O Performance
 
-- Portal, T-SQL, Powershell, or REST
-- Downtime (can be very fast) with no migration required.
-- Hyperscale can scale very fast
+I/O performance can be critical to a database application. Azure SQL abstracts you from physical file placement but there are methods to ensure you get the I/O performance you need.
 
-**Increasing IOPS and reducing IO latency**
+Input/Output per Second (IOPS) may be important to your application. Be sure you have chosen the right service tier and vCores for your IOPS needs. Understand how to measure IOPS for your queries on-premises if you are migrating to Azure. If you have restrictions on IOPS you may see long I/O waits. Scale up vCores or move to Business Critical or Hyperscale if you don't have enough IOPS.
 
-- Do you know to measure IOPS?.
-- IOPs restrictions may show the form of I/O latency.
-- For Azure Database, consider Business Critical or Hyperscale.
-- For Managed Instance, either move to Business Critical or change # files or file size.
+I/O latency is another key component for I/O performance. For faster I/O latency for Azure SQL Database, consider Business Critical or Hyperscale. For faster I/O latency for Managed Instance, move to Business Critical or increase file size or number of files for the database. Improving transaction log latency may require you to use multi-statement transactions.
 
-**Increasing Memory or Workers**
+### Increase Memory or Workers
 
-- For Azure Database, scale up vCores with higher limits for more memory or workers.
-- For Managed Instance, scale up vCores for more memory
-- Increase Max worker threads for Managed Instance.
-- Be careful. Running out of workers may be an application problem like heavy blocking.
+Having enough memory or workers may be important to your application and SQL deployment. For Azure SQL Database, scale up vCores for higher memory limits or workers. For Managed Instance, scale up vCores for higher memory limits. Managed Instance also supports increasing workers with 'max worker threads'.
 
-**Improving Application Latency**
+> [!NOTE]
+> Managed Instance in the future may limit workers based on vCores
 
-Use redirect connections instead of proxy
+### Improving Application Latency
+
+Even if you configure your deployment for all your resource needs, applications may introduce latency performance issues. Be sure to follow these best practices with Azure SQL applications:
+
+- Using a redirect connection type instead of proxy.
+- Optimize "chatty" applications by using stored procedures or limiting the number of query round trips through techniques like batches.
+- Optimize transactions by grouping them vs *singleton* transactions.
+
+### Tune like it is SQL Server
+
+Azure SQL is still SQL Server. There is almost never a substitute for ensuring you tune your SQL Server queries and look at the following:
+
+- Proper index design
+- Using batches
+- Using stored procedures
+- Parameterize queries to avoid too many cached ad-hoc queries
+- Process results in your application quickly and correctly
 
 Go through the next two activities to see example of how to improve performance with Azure SQL:
 
@@ -883,7 +996,9 @@ The concept of "batching" can help most applications including Azure. Read more 
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="4.5">4.5 Intelligent Performance in Azure SQL</h2></a>
 
-In this section you will learn about the built-in intelligent performance capabilities of Azure SQL.
+SQL Server and Azure SQL are constantly enhancing performance capabilities including automation to assist and help deliver consistent performance for your application. Because these automation capabilities are built into the SQL Server engine or Azure SQL service, we call them collectively **Intelligent Performance**.
+
+Intelligent Performance for Azure SQL includes Intelligent Query Processing, Automatic Plan Correction, and Automatic Tuning.
 
 **Intelligent Query Processing**
 
