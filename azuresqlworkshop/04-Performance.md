@@ -14,7 +14,7 @@ You've been responsible for getting your SQL fast, keeping it fast, and making i
 
 In each module you'll get more references, which you should follow up on to learn more. Also watch for links within the text - click on each one to explore that topic.
 
-> **NOTE:** This module does not configure specific performance topics for **SQL Server in Azure Virtual Machine**. SQL Server in Azure Virtual Machine has all the capabilities of SQL Server you have deployed on-prem. There are some unique aspects to configuring performance for SQL Server in Azure Virtual Machine include Virtual Machine sizing and storage. These topics are covered in Module 1 of this workshop.
+>**NOTE:** This module does not configure specific performance topics for **SQL Server in Azure Virtual Machine**. SQL Server in Azure Virtual Machine has all the capabilities of SQL Server you have deployed on-prem. There are some unique aspects to configuring performance for SQL Server in Azure Virtual Machine include Virtual Machine sizing and storage. These topics are covered in Module 1 of this workshop.
 
 In this module, you'll cover these topics:
 
@@ -229,8 +229,7 @@ Extended Events can be used for Azure SQL Database just like SQL Server by creat
 
 You can use SSMS or T-SQL to create and start sessions. You can use SSMS to view extended event session target data or the system function **sys.fn_xe_file_target_read_file**. 
 
-> [!NOTE]
-> Note that the ability with SSMS to View Live Data is not available for Azure SQL Database.
+>**NOTE:** Note that the ability with SSMS to View Live Data is not available for Azure SQL Database.
 
 It is important to know that any extended events fired for your sessions are specific to your database and not across the logical server.
 
@@ -247,7 +246,6 @@ You can use SSMS or T-SQL to create and start sessions. You can use SSMS to view
 ## Performance Scenarios for Azure SQL
 
 In order to decide how to apply monitoring and troubleshooting performance tools and capabilities, it is important to look at performance for Azure SQL through *scenarios*.
-
 
 ### Common Performance Scenarios
 
@@ -326,8 +324,7 @@ To perform analysis on waiting scenarios you typically look at the following too
 
     Query Store provides reports and catalog views that show an aggregation of the top waits for query plan execution. It is important to know that a wait of **CPU** is equivalent to a *running* problem.
 
-> [!TIP]
-> Extended Events can be used for any running or waiting scenarios but requires you to setup an extended events session to trace queries and can be considered a *heavier* method to debug a performance problem.
+> **TIP:** Extended Events can be used for any running or waiting scenarios but requires you to setup an extended events session to trace queries and can be considered a *heavier* method to debug a performance problem.
 
 ### Scenarios specific to Azure SQL
 
@@ -349,8 +346,7 @@ SQL Server uses a worker pool of threads but has limits on the maximum number of
 - Azure SQL Database has limits based on service tier and size. If you exceed this limit, a new query would receive an error.
 - Azure SQL Managed Instance uses 'max worker threads' so workers past this limit may see THREADPOOL waits.
 
-> [!NOTE]
-> Managed Instance in the future may enforce worker limits similar to Azure SQL Database.
+>**NOTE:** Managed Instance in the future may enforce worker limits similar to Azure SQL Database.
 
 #### Business Critical HADR Waits
 
@@ -647,8 +643,7 @@ You may need to scale the number of CPUs for your resource needs. For an on-prem
 
 Downtime is typically required but can be very fast for Azure SQL Database with no migration. Hyperscale deployments allow you to scale up in constant time regardless of data size and Serverless allows for autoscaling based on CPU demand.
 
-> [!NOTE]
-> Managed Instance scaling can take significant time but does not require any migration.
+>**NOTE:** Managed Instance scaling can take significant time but does not require any migration.
 
 ### I/O Performance
 
@@ -662,8 +657,7 @@ I/O latency is another key component for I/O performance. For faster I/O latency
 
 Having enough memory or workers may be important to your application and SQL deployment. For Azure SQL Database, scale up vCores for higher memory limits or workers. For Managed Instance, scale up vCores for higher memory limits. Managed Instance also supports increasing workers with 'max worker threads'.
 
-> [!NOTE]
-> Managed Instance in the future may limit workers based on vCores
+>**NOTE:** Managed Instance in the future may limit workers based on vCores
 
 ### Improving Application Latency
 
