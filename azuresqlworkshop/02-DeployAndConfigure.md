@@ -29,14 +29,32 @@ In this module, you'll cover these topics:
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="2.1">2.1 Pre-deployment planning</h2></a>
 
-Before you start deploying things in Azure, it's important to understand what your requirements are and how they map to offerings in Azure SQL. Using what you learned in Module 1, it's time to make a plan. You need to determine the following:  
-* Deployment method: GUI or unattended?
+Before you start deploying things in Azure, it's important to understand what your requirements are and how they map to offerings in Azure SQL. Using what you learned in the Azure SQL introduction module, it's time to make a plan. You need to answer the following questions:
+
+* Deployment method: Azure portal or command-line interfaces?
 * Deployment option: VM, DB, Elastic Pool, MI, or Instance Pool?
-* Purchasing model: DTU or vCore?
+* Purchasing model (Azure SQL Database only): DTU or vCore?
 * Service tier (SLO): General purpose, business critical, or hyperscale?
-* Hardware: Gen4, Gen5, or something new?
+* Hardware: Gen5, or something new?
 * Sizing: number of vCores and data max size?  
+
 > The Data Migration Assistant tool (DMA) has a [SKU Recommender](https://docs.microsoft.com/en-us/sql/dma/dma-sku-recommend-sql-db?view=sql-server-ver15) that can help you determine the number of vCores and size if you are migrating.  
+
+In addition, and perhaps prior to answering the question above, you need to pick a workload that is either going to be migrated to Azure SQL or be "born in the cloud". If you are migrating, there are many tools and resources available to help you plan, assess, migrate, and optimize your database(s) and application. Resources are provided at the end of this module.  
+
+### Resource limit considerations
+
+Aside from limits, rates, and capabilities discussed in the Azure SQL introduction module (like IOPS or In-Memory OLTP), there are other resource limits, which are affected by your choice of Azure SQL Managed Instance, Azure SQL Database, or options within these choices:  
+
+* Memory
+* Max log size
+* Size of tempdb
+* Max concurrent workers
+* Backup retention
+
+The limits for Azure SQL Managed Instance and Azure SQL Database are dependent on your choice of purchasing model, service tier, and number of vCores (or DTU in Azure SQL Database only). Within a General Purpose Azure SQL Database, your choice of Provisioned or Serverless compute will also affect these limits. You should review what's included in what you plan to deploy, before deploying, to ensure you are starting out with what you may need.  
+
+It is also important to know that Azure SQL resources have overall resource limits *per subscription* and *per region*. If you need to increase your limits, it is possible to request a quota increase in the Azure portal.
 
 <br>
 
@@ -45,6 +63,32 @@ Before you start deploying things in Azure, it's important to understand what yo
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="2.2">2.2 Deploy and Verify</h2></a>
 
 Once you've completed your pre-deployment planning, it's time to deploy and verify that deployment. In this stage, you'll deploy Azure SQL (using the Azure portal or command-line), determine network configuration and how to connect, and run some queries that verify your deployment configuration.  
+
+### Key deployment implementation details
+
+While Azure is taking care of the deployment for you, there are some deployment implementation details that you should be aware of. All of the services are built on the Azure backbone known as *Azure Service Fabric*.  Understanding the backend of how some of these services are deployed and scaled on Azure Service Fabric will help you understand various behaviors that you may see.
+
+#### Azure SQL Managed Instance
+
+Behind the scenes, for Azure SQL Managed Instance, Azure deploys a dedicated ring (sometimes referred to as a *virtual cluster*) for your service. This architecture helps in providing security and native virtual network support. However, because of this architecture, deployment and scaling operations can take longer. For example, when you scale up or down, Azure deploys a new virtual cluster for you and then seeds it with your data. You can think of every instance as running on a single virtual machine. Azure SQL Instance pools were introduced to help with the long deployment time, because you can pre-deploy a "pool" of dedicated resources, making deploying into a pool and scaling within a pool much faster (and with a higher packing density since we can deploy multiple instances within a single VM).  
+
+#### Azure SQL Database
+
+Azure SQL database is contained by a logical database server. In most cases an Azure SQL Database is hosted by a dedicated SQL Server Instance, however you do not have to worry about managing the instance. The logical database server is used so you have something to connect to, as well as for grouping and managing certain permissions and configurations together. Within each logical database server, there is a logical master database, which can provide instance-level diagnostics.
+
+#### Azure SQL Database - Hyperscale
+
+The Hyperscale tier within Azure SQL Database (not yet in Azure SQL Managed Instance) has a unique architecture for Azure SQL. The Azure SQL team rearchitected Hyperscale for the cloud, and this architecture includes a multi-layer caching system, which can help with both speed and scale. Scaling and other operations no longer become size of data related and can be completed in constant time (a matter of minutes). The use of remote storage also allows for snapshot backups. In a later module of the Azure SQL fundamentals learning path, you will learn more details related to the architecture and how it affects performance and availability. One callout to consider during the deployment phase is that once you move a database to the Hyperscale tier, it is not possible to "go back" to the General purpose or Business critical tiers.
+
+#### Resource Governance
+
+As you increase or decrease the resources in a service tier, the limits for dimensions such as CPU, storage, memory, and more may change up to a certain threshold. While there's a multi-faceted approach to governance in Azure SQL, primarily the following three technologies are leveraged to govern your usage of resources in Azure SQL:  
+
+* Windows Job Objects allow a group of processes to be managed and governed as a unit. Job objects are used to govern the file virtual memory commit, working set caps, CPU affinity, and rate caps. You can leverage the DMV `sys.dm_os_job_object` to see the limits in place.
+* Resource Governor is a SQL Server feature that helps users (and in this case Azure) govern resources including CPU, physical IO, memory, and more. Azure SQL Managed Instance also allows user-defined Resource Governor workload groups and pools.
+* File Server Resource Manager (FSRM) is available in Windows Server and is used to govern file directory quotas which are used to manage max data sizes.
+
+Finally, there have been additional implementations to govern transaction log rate built into the database engine for Azure, through *transaction log rate governance*. This process limits high ingestion rates for workloads such as `BULK INSERT`, `SELECT INTO`, and index builds, and they are tracked and enforced as the subsecond level. They currently scale within a service tier linearly.  
 
 <br>
 
@@ -139,14 +183,14 @@ Select **Next : Networking**.
 
 Choices for networking for Azure SQL Database and Azure SQL Managed Instance are different. When you deploy an Azure SQL Database, currently the default is **No access**.  
 
-You can then choose to select Public endpoint or Private endpoint (preview). In this workshop we'll use the public endpoint and set the **Allow Azure services and resources to access this server** option to yes, meaning that other Azure services (e.g. Azure Data Factory or an Azure Virtual Machine) can access the database if you configure it. You can also select **Add current client IP address** if you want to be able to connect from the IP address from the client computer you used to deploy Azure SQL Database, which you do. Make sure your settings match below:
+You can then choose to select Public endpoint or Private endpoint. In this workshop we'll use the public endpoint and set the **Allow Azure services and resources to access this server** option to yes, meaning that other Azure services (e.g. Azure Data Factory or an Azure Virtual Machine) can access the database if you configure it. You can also select **Add current client IP address** if you want to be able to connect from the IP address from the client computer you used to deploy Azure SQL Database, which you do. Make sure your settings match below:
 
 ![](../graphics/networkconnect2.png)
 
 
 With Azure SQL Managed Instance, you deploy it inside an Azure virtual network and a subnet that is dedicated to managed instances. This enables you to have a completely secure, private IP address. Azure SQL Managed Instance provides the ability to connect an on-prem network to a managed instance, connect a managed instance to a linked server or other on-prem data store, and connect a managed instance to other resources. You can additionally enable a public endpoint so you can connect to managed instance from the Internet without a Virtual Private Network (VPN). This access is disabled by default.  
 
-The principle of private endpoints through virtual network isolation is available for Azure SQL Database through a  **private link** (currently in public preview), and you can learn more [here](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview).
+The principle of private endpoints through virtual network isolation is available for Azure SQL Database through a  **private link**, and you can learn more [here](https://docs.microsoft.com/en-us/azure/private-link/private-link-overview).
 
 More information on connectivity for Azure SQL Database can be found [here](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-connectivity-architecture) and for Azure SQL Managed Instance [here](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-managed-instance-connectivity-architecture). There will also be more on this topic in upcoming sections/modules.  
 
@@ -267,6 +311,36 @@ Spend a few minutes clicking around and exploring the differences, at first glan
 
 ![](../graphics/miserver.png)   
 
+### Verify deployment
+
+Once you've completed your deployment, it's time to verify that deployment. In this stage, typically you'll check the results in the Azure portal or Azure CLI, run some queries that verify your deployment configuration, and tweak as necessary.  
+
+For Azure SQL Managed Instance and Azure SQL Database, the first thing you might do is check the status of the database or instance with the Azure portal or the Azure CLI. Next, you can review the deployment details and activity log to ensure there were no failures or active issues.
+
+For Azure SQL Managed Instance, you then might check the ERRORLOG, which is a common thing to do in SQL Server on-premises or in an Azure VM. This capability is not available in Azure SQL Database.  
+
+Finally, you would likely confirm your network is configured properly, obtain the server name, and connect in a tool like SQL Server Management Studio (SSMS) or Azure Data Studio (ADS). There are several queries you can run to better understand what you've deployed and verify it was deployed correctly:  
+
+```sql
+SELECT @@VERSION
+SELECT * FROM sys.databases
+SELECT * FROM sys.objects
+SELECT * FROM sys.dm_os_schedulers
+SELECT * FROM sys.dm_os_sys_info --Not supported in Azure SQL Database
+SELECT * FROM sys.dm_os_process_memory --Not supported in Azure SQL Database
+SELECT * FROM sys.dm_exec_requests
+SELECT SERVERPROPERTY('EngineEdition')
+SELECT * FROM sys.dm_user_db_resource_governance -- Only available in Azure SQL DB and MI
+SELECT * FROM sys.dm_os_job_object -- Only available in Azure SQL DB and MI
+```
+
+There are two queries that are not supported in Azure SQL Database related to OS system information and OS process memory. These queries are not supported because with Azure SQL Database, some things related to the OS are abstracted away from you, since you're just getting a database.  
+
+Additionally, the last two queries are only available in Azure SQL Database and Azure SQL Managed Instance. The first, `sys.dm_user_db_resource_governance`, will return the actual configuration and capacity settings used by resource governance mechanisms in the current database or elastic pool. The second, `sys.dm_os_job_object` will return a single row describing the configuration of the job object that managers the SQL Server process, as well as resource consumption statistics.
+
+The next two exercises will go through all the details involved in deploying an Azure SQL Database or an Azure SQL Managed Instance, and you will leverage the sandbox environment to deploy Azure SQL Database. After deployment, you'll leverage various verification queries and pre-run SQL Notebooks in Azure Data Studio to compare SQL Database, SQL Managed Instance, and SQL Server 2019.  
+
+
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><a name="3"><b>Activity 3</a>: Verify deployment queries</b></p>
 
 Now that you've seen how Azure SQL appears in SSMS, let's explore a tool that may be new to you called Azure Data Studio (ADS). ADS is a source-open tool that provides a lightweight editor and other tools (including Notebooks which you'll see soon) for interacting with Azure Data Services (including SQL Server on-prem, Azure SQL, Azure Database for PostgreSQL, and more). Let's take a brief tour to get acquainted.  
@@ -331,7 +405,72 @@ For this step, you'll use the notebook **VerifyDeployment.ipynb** which is under
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="2.3">2.3 Configure</h2></a>
 
-![](../graphics/configure.png)
+Now that you've verified your deployment was successful and you know what resources are available, there are some other configurations you may wish to do related to configuring your SQL Managed Instance, SQL Database, or databases within a SQL Managed Instance (these are called *managed databases*).
+
+### Configure Azure SQL Managed Instance
+
+For Azure SQL Managed Instance, since it is essentially a managed SQL Server, many configurations available in SQL Server apply here. For example, you can configure using sp_configure and certain global trace flags, and you have options available around tempdb, model, and master. You also have control over your network connectivity and configuration, which will be discussed shortly.
+
+### Configure databases
+
+For managed databases in Azure SQL Managed Instance and Azure SQL Databases, you have options available with the `ALTER DATABASE` command. There are `SET` options and you can select the dbcompat you want to be at (this can help in migrations). You can also use the `ALTER DATABASE` command to change the Edition or Service tier. In Azure SQL Database you don't have access to the file configuration underneath, but in Azure SQL Managed instance you can perform file maintenance. Similar to Azure SQL Managed Instance, you have options available for network connectivity, network configuration, and space management.
+
+In Azure SQL Database specifically, "stale" page detection is enabled and the default server collation `SQL_Latin1_General_CP1_CI_AS` is always used. Additionally, the following are default options set to **ON**:  
+
+* SNAPSHOT_ISOLATION_STATE
+* READ_COMMITTED_SNAPSHOT
+* FULL RECOVERY
+* CHECKSUM
+* QUERY_STORE
+* TDE
+* ACCERATED_DATABASE_RECOVERY
+
+### Restricted configuration choices
+
+If you're familiar with SQL Server, there are a few configurations that are restricted by the Azure SQL Managed Instance and Azure SQL Database service that may affect how you run various tasks. The restricted choices are:  
+
+* Stopping or restarting servers
+* Instant file initialization
+* Locked pages in memory
+* FILESTREAM and Availability Groups (we use Availability Groups internally)
+* Server collation (in MI you can select during deployment but not change)
+* Startup parameters
+* Error reporting and customer feedback
+* `ALTER SERVER CONFIGURATION`
+* ERRORLOG configuration
+* "Mixed Mode" security is forced
+* Logon audit is done through SQL Audit
+* Server Proxy account is N/A
+
+Azure SQL Managed Instance and Database are PaaS offerings so restricting these choices should not inhibit your ability to fully use a SQL Server managed service.
+
+### Storage management
+
+For Azure SQL Managed Instance, there is a maximum storage allowed for the instance and the number of vCores is going to affect the maximum storage (for example, the Business critical tier has a lower maximum storage). If you reach the maximum, you may get Message 1105 for a managed database or Message 1133 for the instance.
+
+The size of any new database will be based on the size of the model database, which is a 100 Mb data file and an 8 Mb log file, just like SQL Server. Also like SQL Server, the size of model is configurable. You have the ability to alter the size as well as the number of files, but you do not have control over the physical location of them, as Microsoft has commitments per your deployment choice on I/O performance. Additionally, since remote storage is used in the General Purpose service tier, performance can be affected by the data file and log file size.
+
+For Azure SQL Database, the *Data max size* is the maximum possible size of a single database file, and only one is allowed. The database file *Maxsize* (as defined by the `sys.database_files.max_size` column) can grow to the Data max size. To understand this idea of Data max size versus Maxsize, let's consider an example where a 1 TB (Data max size) General purpose database is deployed. When you do this, however, your database only requires ~500 GB (not 1 TB). As your database grows and approaches the Data max size, the database file Maxsize will also grow up to the 1 TB level.
+
+The transaction log is in addition to the data size, and it is truncated regularly due to automatic backups as Accelerated Database Recovery is on by default. The log's maximum size is always 30% of the Data max size. For example, if the data max size is 1 TB, then the maximum transaction log size is 0.3 TB, and the total of data max size and log size is 1.3 TB.
+
+The Azure SQL Database Hyperscale tier is different from the other service tiers in that it creates a database initially 40GB and grows automatically in size to the limit of 100TB. The transaction log has a fixed size restriction of 1TB.  
+
+### Connectivity architecture and policy
+
+Part of configuring your Azure SQL database logical server or Azure SQL Managed Instance involves determining the route of connection to your database(s).
+
+For Azure SQL Managed Instance you can choose the connection type or policy during the deployment. In Azure SQL Database, you can choose the connection type after deployment.
+
+You can keep the default of *Proxy for connections from outside and Redirect for connections within Azure* or configure something else.
+
+:::image type="content" source="../graphics/5-connectivity.png" alt-text="Connection policies in Azure SQL" border="false":::
+
+At the highest level, in Proxy mode, all connections are proxied through the a gateway. In Redirect mode, after the connection is established leveraging the gateway (redirect-find-db in the figure above) the connection can then connect directly to the database or managed instance.
+
+The direct connection (redirect) allows for reduced latency and improved throughput, but also requires opening up additional ports to allow inbound and outbound communication in the range of 11000 - 11999.  
+
+In the next exercise, you'll be exposed to some commands for configuring Azure SQL with the Azure CLI, and then you'll dive into evaluating the Proxy and Redirect connection policies.
 
 <br>
 
@@ -351,6 +490,30 @@ For this activity, you'll use the notebook called **AzureCli.ipynb** which is un
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="2.4">2.4 Load data</h2></a>
+
+Once a database or instance is deployed, verified, and configured, the next logical step is to bring data in.There are many options available for you when it comes to loading data into Azure SQL. Many of them overlap with what's available on-premises, but there are a few that will be called out in this unit.  
+
+### Bulk copy program
+
+Bulk copy program (bcp) is a very common utility for connecting to Azure SQL from on-premises, as well as connecting to Azure SQL from an Azure Virtual Machine. You can then use it to move data into Azure SQL.  
+
+### BULK INSERT
+
+Bulk insert operations are very similar to in SQL Server on-premises, except instead of loading data from a file (or multiple files) on your machine, you load data from Azure Blob storage. The next exercise will walk through an example of how.  
+
+### SSIS packages
+
+In Azure SQL, you can use this to connect with SSIS on-premises. You can host an SSIS DB in Azure SQL Database or Azure SQL Managed Instance. Additionally, you can use the Azure-SSIS Integration Runtime (IR) for SSIS packages with tools like Azure Data Factory.
+
+### Other options
+
+Some other interesting options include using technologies like Spark or Azure Data Factory to load data into Azure SQL Database or Azure SQL Managed Instance. Not directly related to "loading", but it is possible to create a database leveraging an existing database for a copy or doing an import of a bacpac file. In Azure SQL Managed Instance, the T-SQL commands to restore a database natively from a URL is possible.  
+
+### Considerations for loading data
+
+The biggest difference between loading data on-premises and loading data into Azure SQL is that the data you want to load needs to be hosted in Azure as opposed to in files on-premises. These files and file systems on-premises can be stored in Azure Blob storage as an alternative. This will also increase the efficiency at which you can load your files in and set up ETL jobs.  
+
+Another thing to keep in mind is that minimal logging is not supported, so you're always running in full recovery mode. Because of this and limits around log throughput, you might be affected by log governance as you're loading data. Techniques like using batches and appropriately sizing them become important during a bulk load. You'll see more of this in the following exercise. Loading into a clustered columnstore index may help in avoiding transaction log limits, depending on your scenario.
 
 <br>
 

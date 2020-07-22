@@ -259,8 +259,9 @@ Popular command line interfaces such as [sqlcmd](https://docs.microsoft.com/en-u
 
 In addition, the [az CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest) and [Azure Powershell cmdlets](https://docs.microsoft.com/en-us/powershell/azure/?view=azps-3.7.0) are supported for specific Azure SQL service scenarios. All of these CLIs are supported across Windows, macOS, and Linux clients. In addition, tools like sqlcmd and az are pre-installed in the [Azure Cloud Shell](https://azure.microsoft.com/en-us/features/cloud-shell/).
 
+### What to use when
 
-<p style="border-bottom: 1px solid lightgrey;"></p>
+There are several different interfaces you can use to interact with Azure SQL. Many of the capabilities are available in each of the interfaces. Which one you choose will depend on a combination of preference and what you're trying to accomplish. Throughout the workshop, you'll get exposure to many of the interfaces above, but the end of this module will also provide resources for you to go deeper in the ones that interest you.  
 
 In this module, you learned about Azure SQL, including the deployment options, purchasing models, service tiers, and hardware choices. Hopefully, you also have a better understanding of what to choose when. In the next module, you'll learn more about deploying and configuring Azure SQL.  
 

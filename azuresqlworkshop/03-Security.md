@@ -389,6 +389,46 @@ Microsoft is actively investing heavily in Private Link for SQL and other servic
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="3.2">3.2 Access management and Authorization</h2></a>
 
+Once you've worked out the networking access, the next layer to consider is identity and access.
+
+### Azure Role-Based Access Control (RBAC)
+
+All Azure types of operations for Azure SQL are controlled through RBAC. Azure RBAC is currently decoupled from SQL Security today, but you can think of it as security rights outside of the SQL Database or SQL Managed Instance with a scope including subscription, resource group, and resource. This will apply to operations in the Azure portal, Azure CLI, and Azure PowerShell. Azure RBAC allows for separation of duties between deployment, management, and usage.
+
+There are built-in roles available to reduce need for higher-level Azure RBAC roles like Owner or Contributor. Effectively, you can use these roles to have certain individuals deploy Azure SQL resources (or manage security policies) but grant other users actual access to user or manage the instance or database.  For example, a SQL Server contributor could deploy a server but assign an Azure SQL Database user to be the admin of the server and databases. The built-in roles include:  
+
+* SQL DB Contributor: Can create and manage databases but not access the database (for example, cannot connect and read data)
+* SQL Managed Instance Contributor: Can create and manage managed instances but not access them
+* SQL Security Manager:  Can manage security policies for databases and instances (like auditing) but not access them
+* SQL Server Contributor: Can manage servers and databases but not access them.
+
+### Authentication
+
+For both Azure SQL Database and Azure SQL Managed Instance, SQL authentication is used for deployment, and this is referred to as the **server admin**. In Azure SQL Database, the server admin is a server-level principal for the Azure SQL Database logical server, but for Azure SQL Managed Instance it is a member of the sysadmin server role. In addition, "Mixed Mode" authentication is forced for both deployment options.
+
+If you are migrating a workload that needs Windows Authentication or your organization leverages Azure Active Directory (Azure AD), you can use Azure AD. For both Azure SQL Managed Instance and Azure SQL Database, you can assign an Azure AD server admin using the portal or command-line tools.  
+
+### Grant other users access
+
+For Azure SQL Managed Instance, it is similar to SQL Server in that you can have SQL or Azure AD logins, database users, and contained database users. In Azure SQL Database, there are a few nuances. You can have SQL logins, database users, and even contained database users for Azure AD (recommended). While the server admin for Azure SQL Database essentially has sysadmin rights, you can create more limited admins using database level roles in the master of the Azure SQL Database logical server. There are two roles available:
+
+* **loginmanager** is a database-level role that allows members to create logins for the database server
+* **dbmanager** is a database-level role that allows members to create and delete databases for the database server.
+
+#### Azure AD  
+
+Azure AD authentication is a little different. From the documentation, "*Azure Active Directory authentication requires that database users are created as contained. A contained database user maps to an identity in the Azure AD directory associated with the database and has no login in the master database. The Azure AD identity can either be for an individual user or a group*."  
+
+Additionally, the Azure portal can only be used to create administrators, and Azure RBAC roles don't propagate to Azure SQL Database logical servers, Azure SQL Databases, or Azure SQL Managed Instances. Additional server/database permissions must be granted using T-SQL.  
+
+If you want to create a user that can authenticate at the database level using Azure AD authentication, you can use new T-SQL such as `CREATE USER [anna@contoso.com] FROM EXTERNAL PROVIDER`.  
+
+At the end of the day, when you set up and configure authentication and authorization, there are four guidelines you can follow:  
+
+1. Deploy with a server admin
+1. Create other admins as necessary
+1. Admins can create users
+1. Grant access just like you would in SQL Server  
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><a name="4"><b>Activity 4</a>: Getting started with Azure AD authentication</b></p>
 
@@ -492,43 +532,36 @@ Select **Connect** and confirm you're able to access the database.
 
 As a clean up step, right-click on the connection from BobLovesTN and select **Disconnect**.  
 
-**Step 5 - Grant other users access (Azure AD) - *Demo/Whiteboard only***   
-
-Azure AD authentication is a little different. From the documentation, "*Azure Active Directory authentication requires that database users are created as contained. A contained database user maps to an identity in the Azure AD directory associated with the database and has no login in the master database. The Azure AD identity can either be for an individual user or a group*."  
-
-Additionally, the Azure portal can only be used to create administrators, and Azure RBAC roles don't propagate to Azure SQL Database logical servers, Azure SQL Databases, or Azure SQL Managed Instances. Additional server/database permissions must be granted using T-SQL.  
-
-If you are attending in-person, your instructor will demo/whiteboard how to add Azure AD users and give them access. If you are attending this self-paced, you can review the scripts below. This scenario involves giving *Person B* access to *Person A*'s Azure SQL Database logical server from an Azure VM.  
-
-```sql
--- Create the Azure AD user with access to the server
-CREATE USER "Person B Azure AD account" FROM EXTERNAL PROVIDER;
-
--- Until you run the following two lines, the user has no access to read or write data
-ALTER ROLE db_datareader ADD MEMBER "Person B Azure AD account";
-
--- Create firewall to allow Person B's Azure VM
-EXECUTE sp_set_firewall_rule @name = N'AllowPersonB',
-    @start_ip_address = 'Person B VM Public IP', 
-    @end_ip_address = 'Person B VM Public IP';
-```
-*Person B* should now be able to connect to the server from their Azure VM. Read commands should work, but write commands should fail.  
-```sql
--- Example of a read command
-SELECT *
-  FROM [SalesLT].[ProductCategory];
-
--- Example of a write command
-UPDATE [SalesLT].[ProductCategory]
-    SET ModifiedDate = GETDATE()
-    WHERE ProductCategoryID = 1;
-```  
-
 In the real-world, scenarios can get complex quickly, because not only do users need the correct access to the server and/or databases, but they also need access to the network. For more information, please refer to the [documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-vnet-service-endpoint-rule-overview) and the [Azure SQL Security best practices](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-security-best-practice#network-security).
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="3.3">3.3 Information protection and encryption</h2></a>
+
+Once your network and identity access are configured and secure, the next topic to consider is how to protect your data, whether it is at rest, in motion, or being viewed by users and admins.
+
+### Data encryption
+
+Encrypted connections are forced by Azure SQL Database, with the option to additionally specify the inbound TLS minimum version (>1.0, >1.1, or >1.2) required. For Azure SQL Managed Instance, a TLS version of >1.2 is forced for outbound connections, and you have the same options for inbound TLS as with Azure SQL Database. The recommended task is to force encryption on the client to avoid server negotiation, as well as to not trust server certificate as a best practice.
+
+Transparent Data Encryption (TDE) provides encryption for data at rest and is on by default for all new Azure SQL Databases, and can be configured for all deployment options via a switch in the Azure portal.
+
+You also have the ability to leverage column-level encryption, which is supported in Azure SQL just as it is in SQL Server. Similarly, always encrypted is supported just like in SQL Server. This process involves client-side encryption of sensitive data using keys that are never given to the database system. Additionally, the client driver transparently encrypts query parameters and decrypts the encrypted results. There is currently support on encrypted data for equality comparison, including `JOIN`, `GROUP BY`, and `DISTINCT` operators by deterministic encryption.
+
+One important note is Always Encrypted with secure enclaves is not yet available in Azure SQL Database or Azure SQL Managed Instance.
+
+### Dynamic Data Masking
+
+On certain occasions, there is data that you will want to be masked or modified so unprivileged users cannot see the data, but can still perform queries including that data. This capability is supported just like in SQL Server, however there are additional capabilities and views in the Azure portal that allow you to see recommendations of fields to mask.
+
+### Tasks for data protection
+
+In order to set up and configure data protection, you should:
+
+1. Ensure your applications force connection encryption
+1. Evaluate and enable TDE (default for new databases, but if you migrate you may need to enable it)
+1. Take advantage of Dynamic Data Masking
+1. For advanced protection, you can configure Always Encrypted
 
 <br>
 
@@ -554,14 +587,42 @@ You can, alternatively, bring your own key (BYOK) leveraging Azure key vault. In
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="3.4">3.4 Security management</h2></a>
 
-<br>
+Once your Azure SQL Database or Azure SQL Managed Instance is secured on the networking, authentication, and data protection levels, the final step is to understand how you're going to manage security on an ongoing basis. Managing security includes auditing, monitoring, and, in the case of Azure SQL, Advanced data security.
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><a name="6"><b>Activity 6</a>: Advanced Data Security</b></p>
+### Auditing
+
+Auditing helps maintain regulatory compliance, understand database activity, and gain insight into discrepancies and anomalies that could indicate potential security violations.
+
+Traditional SQL Server Auditing using T-SQL is only available (with some differences) in Azure SQL Managed Instance. The primary differences are:  
+
+* With `CREATE AUDIT`, you have new syntax `TO URL` and `TO EXTERNAL MONITOR` allow you to specify an Azure Blob storage container and enable Event Hub and Azure Monitor logs target, respectively.  
+* `TO FILE`, shutdown option, and `queue_delay=0` are not supported in Azure SQL.
+
+As an alternative to SQL Server Audit, in Azure SQL Database there is *Azure SQL Auditing*. It is powered by SQL Server Audit, and supports Audit Action Groups and Actions, like SQL Server. Azure SQL Auditing tracks database and server events and writes events to an audit log in either Azure Blob storage, Azure Monitor logs (also referred to as Log Analytics), or to an Event hub. If you point to an Azure Blob storage account, you can store and analyze your results in XEvents files. With Log Analytics, you unlock the ability to query your logs with Kusto Query Language (KQL) and leverage the auditing Log Analytics dashboards.
+
+In an earlier exercise, you set up Auditing at the server level, but it is also available at the database level. In a future exercise, you will see how to take access and utilize the files sent to Azure Blob storage, KQL, and the Log Analytics dashboards.
+
+### Monitoring
+
+There are two aspects to monitoring and managing security: the Azure level and the database/server level. In Azure, you can leverage tools like the Activity Logs and RBAC auditing.
+
+In Azure SQL Managed Instance, you can configure SQL Server audit, and the engine can track the failed and successful logins. Failed logins for Azure SQL Managed Instance are also tracked in the ERRORLOG. In Azure SQL Database, you can configure Azure SQL Auditing and leverage DMVs, Metrics, and Alerts in order to monitor security-related events (for example, `sys.event_log` will allow you to track the number of failed and successful connections and the number of connections blocked by the firewall).  
+
+For both services, Microsoft recommends you configure Advanced data security including setting up alerts for Advanced Threat Protection (discussed in the next section and exercise). Finally, you can leverage the Azure Security Center to monitor, manage, and receive recommendations on all the resources in your Azure estate.
+
+### Advanced data security
 
 Advanced data security (ADS) is a unified package for advanced SQL security capabilities, providing a single go-to location for enabling and managing three main capabilities:  
+
 * [Data discovery & classification](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-data-discovery-and-classification)  
 * [Vulnerability assessment](https://docs.microsoft.com/en-us/azure/sql-database/sql-vulnerability-assessment)  
 * [Advanced Threat Protection](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-threat-detection-overview)  
+
+In the next two exercises, you'll dive into the capabilities and scenarios that Advanced data security enables and protects against.
+
+<br>
+
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><a name="6"><b>Activity 6</a>: Advanced Data Security</b></p>
 
 In this activity, you'll enable ADS and explore some of the features within each of the capabilities mentioned above.  
 
