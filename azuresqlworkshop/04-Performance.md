@@ -211,7 +211,7 @@ There are a few DMVs worth calling out you will need to solve certain performanc
 
 These DMVs provide deeper insight into resource limits and resource governance for Azure SQL. They are not meant to be used for common scenarios but might be helpful when looking deep into complex performance problems. Consult the documentation for all the details of these DMVs:
 
-- **sys.dm_user_db_resource_governance_internal**
+- **sys.dm_user_db_resource_governance_internal** (Managed Instance only)
 - **sys.dm_resource_governor_resource_pools_history_ex**
 - **sys.dm_resource_governor_workload_groups_history_ex**
 
