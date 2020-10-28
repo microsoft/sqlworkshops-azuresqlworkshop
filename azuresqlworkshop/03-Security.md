@@ -632,8 +632,6 @@ In this activity, you'll enable Azure Defender and explore some of the features 
 
 In the Azure portal, navigate to your Azure SQL Database logical server. Then, in the left-hand menu, under Security, select **Azure Defender**. If you followed the deployment activity in Module 2, Azure Defender should already be enabled. If it is not, select **ON** and select **Save**.
 
-![](../graphics/adson.png)  
-
 
 **Step 2 - Azure Defender server level settings**  
 
@@ -768,8 +766,6 @@ Within a few minutes, you should receive an email similar to the following.
 ![](../graphics/atpemail.png)  
 
 Additionally, navigate to the Azure portal to your AdventureWorks database. In the left-hand menu, under Security, select **Security Center**. You should now see an alert.  
-
-![](../graphics/atpalert.png)  
 
 You can drill into that alert to see the overall security alerts.  
 
