@@ -720,8 +720,6 @@ To learn more about VA, refer to the [documentation](https://docs.microsoft.com/
 
 Select the **X** in the top right corner of VA to get back to the Azure Defender dashboard. Select the **Advanced Threat Protection** (ATP) box to drill in and review the results. ATP detects anomalous activities indicating unusual and potentially harmful attempts to access or exploit databases.    
 
-![](../graphics/adsdashboard3.png)  
-
 Likely, you won't see any security alerts at this stage. In the next step, you will run a test that will trigger an alert, so you can review the results in ATP.  
 
 **Step 6 - Testing ATP capabilities**  
