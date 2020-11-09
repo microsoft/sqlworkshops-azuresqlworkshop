@@ -22,7 +22,7 @@ In this module, you'll cover these topics:
 [3.3](#3.3): Information protection and encryption  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Bonus) [Activity 5](#5): Confirm TDE is enabled   
 [3.4](#3.4): Security management  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Activity 6](#6): Advanced data security   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Activity 6](#6): Data classification and Azure Defender   
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Bonus) [Activity 7](#7): Data classification, Dynamic data masking, and SQL Audit
 
 
@@ -77,7 +77,7 @@ Next, select **Storage**. This option allows you to collect XEvent log files in 
 
 ![](../graphics/configstorage.png)  
 
-Next, select the subscription you're using for this workshop as well as the storage account in the resource group with your ID that was created in Module 02 when you selected the Advanced Data Security Free Trial (should be *sql* + *a random string of letters and numbers*). In this storage account, auditing logs will be saved as a collection of blob files within a container named **sqldbauditlogs**.   
+Next, select the subscription you're using for this workshop as well as the storage account in the resource group with your ID that was created in Module 02 when you selected the Azure Defender Free Trial (should be *sql* + *a random string of letters and numbers*). In this storage account, auditing logs will be saved as a collection of blob files within a container named **sqldbauditlogs**.   
 
 > Note: depending on your organization, in production you may consider having a separate storage account for the audit logs.
 
@@ -587,7 +587,7 @@ You can, alternatively, bring your own key (BYOK) leveraging Azure key vault. In
 
 <h2><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/pencil2.png"><a name="3.4">3.4 Security management</h2></a>
 
-Once your Azure SQL Database or Azure SQL Managed Instance is secured on the networking, authentication, and data protection levels, the final step is to understand how you're going to manage security on an ongoing basis. Managing security includes auditing, monitoring, and, in the case of Azure SQL, Advanced data security.
+Once your Azure SQL Database or Azure SQL Managed Instance is secured on the networking, authentication, and data protection levels, the final step is to understand how you're going to manage security on an ongoing basis. Managing security includes auditing, monitoring, and, in the case of Azure SQL, Azure Defender.
 
 ### Auditing
 
@@ -608,39 +608,36 @@ There are two aspects to monitoring and managing security: the Azure level and t
 
 In Azure SQL Managed Instance, you can configure SQL Server audit, and the engine can track the failed and successful logins. Failed logins for Azure SQL Managed Instance are also tracked in the ERRORLOG. In Azure SQL Database, you can configure Azure SQL Auditing and leverage DMVs, Metrics, and Alerts in order to monitor security-related events (for example, `sys.event_log` will allow you to track the number of failed and successful connections and the number of connections blocked by the firewall).  
 
-For both services, Microsoft recommends you configure Advanced data security including setting up alerts for Advanced Threat Protection (discussed in the next section and exercise). Finally, you can leverage the Azure Security Center to monitor, manage, and receive recommendations on all the resources in your Azure estate.
+For both services, Microsoft recommends you configure Azure Defender including setting up alerts for Advanced Threat Protection (discussed in the next section and exercise). Finally, you can leverage the Azure Security Center to monitor, manage, and receive recommendations on all the resources in your Azure estate.
 
-### Advanced data security
+### Azure Defender
 
-Advanced data security (ADS) is a unified package for advanced SQL security capabilities, providing a single go-to location for enabling and managing three main capabilities:  
-
-* [Data discovery & classification](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-data-discovery-and-classification)  
+Azure Defender is a unified package for advanced SQL security capabilities, providing a single go-to location for enabling and managing three main capabilities:  
+  
 * [Vulnerability assessment](https://docs.microsoft.com/en-us/azure/sql-database/sql-vulnerability-assessment)  
 * [Advanced Threat Protection](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-threat-detection-overview)  
 
-In the next two exercises, you'll dive into the capabilities and scenarios that Advanced data security enables and protects against.
+In the next two exercises, you'll dive into the capabilities and scenarios that Azure Defender enables and protects against, as well as [Data discovery & classification](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-data-discovery-and-classification).
 
 <br>
 
-<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><a name="6"><b>Activity 6</a>: Advanced Data Security</b></p>
+<p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><a name="6"><b>Activity 6</a>: Data Classification and Azure Defender</b></p>
 
-In this activity, you'll enable ADS and explore some of the features within each of the capabilities mentioned above.  
+In this activity, you'll enable Azure Defender and explore some of the features within each of the capabilities mentioned above.  
 
 
 <p><img style="margin: 0px 15px 15px 0px;" src="../graphics/checkmark.png"><b>Steps</b></p>
 
-**Step 1 - Enable ADS**  
+**Step 1 - Enable Azure Defender**  
 
-In the Azure portal, navigate to your Azure SQL Database logical server. Then, in the left-hand menu, under Security, select **Advanced data security**. If you followed the deployment activity in Module 2, ADS should already be enabled. If it is not, select **ON** and select **Save**.
-
-![](../graphics/adson.png)  
+In the Azure portal, navigate to your Azure SQL Database logical server. Then, in the left-hand menu, under Security, select **Azure Defender**. If you followed the deployment activity in Module 2, Azure Defender should already be enabled. If it is not, select **ON** and select **Save**.
 
 
-**Step 2 - ADS server level settings**  
+**Step 2 - Azure Defender server level settings**  
 
-In this step, you'll review the selections you've made for your Azure SQL Database logical server. In the same pane as step 1 (Azure SQL Database logical server > Security > Advanced data security), you will also see information regarding Vulnerability Assessments and Advanced Threat Protection.  
+In this step, you'll review the selections you've made for your Azure SQL Database logical server. In the same pane as step 1 (Azure SQL Database logical server > Security > Security Center), you will also see information regarding Vulnerability Assessments and Advanced Threat Protection.  
 
-At the highest level, SQL Vulnerability Assessment (VA) is a scanning service that provides visibility into your security state. It then provides actionable steps to address any potential concerns. When you configure periodic recurring scans, you're enabling the service to scan your databases every seven days and check for any vulnerabilities. You can then choose to send those reports to the admins, subscription owners, or anyone else that might need to be made notified of changes. In order for this service to operate, you have to specify a storage account for the results to be stored. This storage account was deployed during deployment of your Azure SQL Database, as you opted in to turn on ADS. Review the options and add your email address if you want to receive the results of the recurring scan (weekly).  
+At the highest level, SQL Vulnerability Assessment (VA) is a scanning service that provides visibility into your security state. It then provides actionable steps to address any potential concerns. When you configure periodic recurring scans, you're enabling the service to scan your databases every seven days and check for any vulnerabilities. You can then choose to send those reports to the admins, subscription owners, or anyone else that might need to be made notified of changes. In order for this service to operate, you have to specify a storage account for the results to be stored. This storage account was deployed during deployment of your Azure SQL Database, as you opted in to turn on Azure Defender. Review the options and add your email address if you want to receive the results of the recurring scan (weekly).  
 
 ![](../graphics/vasettings.png)  
 
@@ -660,9 +657,7 @@ Setting these settings up will enable you to complete some of the other steps in
 
 **Step 3 - Data Discovery & Classification**  
 
-Navigate back to your Azure SQL Database (not the logical server!). In the left-hand menu, under Security, Select **Advanced data security**. 
-
-![](../graphics/adsdashboard.png)   
+Navigate back to your Azure SQL Database (not the logical server!). In the left-hand menu, under Security, Select **Data Discovery & Classification**. 
 
 First, you'll review Data Discovery & Classification (DD&C) which provides advanced capabilities for discovering, classifying, labeling, and reporting the sensitive data in your database. For more information, refer to the [documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-data-discovery-and-classification?tabs=azure-t-sql).
 
@@ -688,13 +683,12 @@ Finally, select **Overview** to view the overview dashboard and review the class
 
 **Step 4 - Vulnerability Assessment**  
 
-Select the **X** in the top right corner of DD&C to bring you back to the ADS dashboard. Next, you'll review the Vulnerability Assessment (VA) capabilities. Start by selecting the **Vulnerability Assessment** box.  
+Select the **X** in the top right corner of DD&C and select **Security Center** under the Security section. Next, you'll review the Vulnerability Assessment (VA) capabilities. Start by selecting the **Vulnerability Assessment** box.  
 
-![](../graphics/adsdashboard2.png)  
 
 Next, select **Scan** to get the most current VA results. This will take a few moments, while VA scans all the databases in your Azure SQL Database logical server.    
 
-> Note: You might be wondering why you need to complete the scan again. When you configured ADS in Step 2, you set up periodic recurring scans. These scans take place every 7 days. By this definition, the first scan happened when you deployed the database. But since then, you have made several changes related to security (networking and auditing specifically), so to get an up-to-date report, you need to run the scan again.  
+> Note: You might be wondering why you need to complete the scan again. When you configured Azure Defender in Step 2, you set up periodic recurring scans. These scans take place every 7 days. By this definition, the first scan happened when you deployed the database. But since then, you have made several changes related to security (networking and auditing specifically), so to get an up-to-date report, you need to run the scan again.  
 
 ![](../graphics/vascan.png)  
 
@@ -724,9 +718,7 @@ To learn more about VA, refer to the [documentation](https://docs.microsoft.com/
 
 **Step 5 - Advanced Threat Protection overview**  
 
-Select the **X** in the top right corner of VA to get back to the ADS dashboard. Select the **Advanced Threat Protection** (ATP) box to drill in and review the results. ATP detects anomalous activities indicating unusual and potentially harmful attempts to access or exploit databases.    
-
-![](../graphics/adsdashboard3.png)  
+Select the **X** in the top right corner of VA to get back to the Azure Defender dashboard. Select the **Advanced Threat Protection** (ATP) box to drill in and review the results. ATP detects anomalous activities indicating unusual and potentially harmful attempts to access or exploit databases.    
 
 Likely, you won't see any security alerts at this stage. In the next step, you will run a test that will trigger an alert, so you can review the results in ATP.  
 
@@ -771,9 +763,7 @@ Within a few minutes, you should receive an email similar to the following.
 
 ![](../graphics/atpemail.png)  
 
-Additionally, navigate to the Azure portal to your AdventureWorks database. In the left-hand menu, under Security, select **Advanced data security**. You should now see an alert.  
-
-![](../graphics/atpalert.png)  
+Additionally, navigate to the Azure portal to your AdventureWorks database. In the left-hand menu, under Security, select **Security Center**. You should now see an alert.  
 
 You can drill into that alert to see the overall security alerts.  
 
@@ -785,7 +775,7 @@ You can also click specific alerts to see more details about them.
 
 You can learn more about SQL Injection attacks in the [documentation](https://docs.microsoft.com/en-us/sql/relational-databases/security/sql-injection?view=sql-server-ver15). You can read more about Advanced Threat Protection [here](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-advanced-data-security).
 
-In this activity, you learned how to configure and leverage some of the features in Advanced data security. In the following bonus activity, you'll expand on what you've learned throughout the security module by using various security features together.  
+In this activity, you learned how to configure and leverage some of the features in Azure Defender. In the following bonus activity, you'll expand on what you've learned throughout the security module by using various security features together.  
 
 > **Important! Clean up note:** You might consider closing all your query editors in SSMS and removing all connections except the one Azure AD connection. The **Azure AD connection** will be used in the next Activity. 
 
@@ -797,9 +787,7 @@ In this activity, you will learn how to audit users trying to view columns that 
 
 **Step 1 - Add new data classification manually**  
 
-In the Azure portal, navigate to your Azure SQL Database (not logical server!). In the left-hand menu, under Security, select **Advanced data security** and then select the **Data Discovery & Classification** box.  
-
-![](../graphics/adsdashboard4.png)  
+In the Azure portal, navigate to your Azure SQL Database (not logical server!). In the left-hand menu, under Security, select **Data Discovery & Classification**.   
 
 Next, select the **Classification** tab and then select **+ Add classification**.  
 
