@@ -983,7 +983,7 @@ Run the modified workload using the script with ostress called **order_rating_in
 
 Now the workload runs in almost 2-5 seconds compared to even 18-19 seconds with a local SSD using singleton transactions. This is an example of tuning an application for SQL queries that will run after in or outside of Azure.
 
-The workload runs so fast it may be difficult to observe diagnostic data from queries used previously in this activity. It is important to note that sys.dm_os_wait_stats cannot be cleared using DBCC SQLPERF as it can be with SQL Server.
+The workload runs so fast it may be difficult to observe diagnostic data from queries used previously in this activity.
 
 The concept of "batching" can help most applications including Azure. Read more about batching in the [documentation](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-use-batching-to-improve-performance).
 
