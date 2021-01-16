@@ -111,7 +111,7 @@ For performance, one option that is not available to change is the recovery mode
 
 SQL Server professionals often use files and filegroups to improve I/O performance through physical file placement. Azure SQL does not allow users to place files on specific disk systems. However, Azure SQL has resource commitments for I/O performance with regards to rates, IOPS, and latencies so abstracting the user from physical file placement can be a benefit.
 
-Azure SQL Database only has one database file (Hyperscale many have several) and the maximum size is configured through Azure interfaces. There is no functionality to create additional files.
+Azure SQL Database may have one or more files depending on the Data Max Size (Hyperscale typically has multiple files) and the maximum size is configured through Azure interfaces. There is no functionality to create additional files.
 
 Azure SQL Managed Instance supports adding database files and configuring sizes but not physical placement of files. The number of files and file sizes for Azure SQL Managed Instance can be used to improve I/O performance. Read more [here](https://techcommunity.microsoft.com/t5/datacat/storage-performance-best-practices-and-considerations-for-azure/ba-p/305525). 
 
@@ -211,7 +211,7 @@ There are a few DMVs worth calling out you will need to solve certain performanc
 
 These DMVs provide deeper insight into resource limits and resource governance for Azure SQL. They are not meant to be used for common scenarios but might be helpful when looking deep into complex performance problems. Consult the documentation for all the details of these DMVs:
 
-- **sys.dm_user_db_resource_governance_internal** (Managed Instance only)
+- **sys.dm_user_db_resource_governance_internal** (Managed Instance only and not documented)
 - **sys.dm_resource_governor_resource_pools_history_ex**
 - **sys.dm_resource_governor_workload_groups_history_ex**
 
@@ -272,6 +272,14 @@ Running or waiting scenarios can often be determined by looking at overall resou
 - sys.server_resource_stats
 
     This DMV behaves just like sys.dm_db_resource_stats but it used to see resource usage for the Managed Instance for CPU, memory, and I/O. This DMV also takes a snapshot every 15 seconds.
+
+- sys.dm_user_db_resource_governance
+
+    For Azure SQL Database, this DMV returns the actual configuration and capacity settings used by resource governance mechanisms in the current database or elastic pool.
+
+- sys.dm_instance_resource_governance
+
+    For Azure SQL Managed Instance, this DMV returns similar information as sys.dm_user_db_resource_governance but for the current SQL Managed Instance.
 
 #### Running
 
@@ -337,7 +345,7 @@ Azure SQL can enforce resource limits on transaction log usage called *log rate 
 - LOG_RATE_GOVERNOR - waits for Azure SQL Database
 - POOL_LOG_RATE_GOVERNOR - waits for Elastic Pools
 - INSTANCE_LOG_GOVERNOR - waits for Azure SQL Managed Instance
-- HADR_THROTTLE_LOG_RATE* - waits for Business Critical and Geo-Replication latency
+- HADR_THROTTLE_LOG_RATE - waits for Business Critical and Geo-Replication latency
 
 #### Worker limits
 
