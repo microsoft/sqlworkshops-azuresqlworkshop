@@ -137,12 +137,14 @@ Azure automation is a service that allows you to orchestrate processes through a
 
 There are other capabilities you should know about when comparing SQL Server to Azure SQL:
 
-- **External tables** are allowed across Azure SQL Databases but Polybase external tables are not a complete feature available yet in Azure SQL.
-- **Linked Servers** and cross-database queries are available in Managed Instance.
+- **External tables** are allowed across Azure SQL Databases and Azure Synapse Serverless SQL pools.
+- **Linked Servers** in Managed Instance to Azure SQL, SQL Server, or Azure Synapse SQL pools.
+- **Cross-database queries** are available in Managed Instance.
 - **Database Mail** and **Service Broker** are available in Managed Instance.
 - **Full-text search** is supported but also take a look at Azure Search integration.
 - **Machine Learning Services** is in Preview for Managed Instance.
-- **xp_cmdshell** and **DTC** are not supported for Azure SQL.
+- **DTC** for Managed Instance is in Preview.
+- **xp_cmdshell** is not supported for Azure SQL.
 
 ### Errors
 
