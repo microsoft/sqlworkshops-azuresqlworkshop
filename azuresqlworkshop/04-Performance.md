@@ -253,7 +253,7 @@ A common technique for SQL Server performance troubleshooting is to examine if a
 
 The following diagram shows a common decision tree to determine if a SQL performance issue is running or waiting and how to use common performance tools to determine the cause and solution.
 
-![runningvswaiting](../graphics/4-running-vs-waiting.png)
+![runningvswaiting](../graphics/4-running-vs-waiting-new.png)
 
 Let's dive more into the details of each aspect of the diagram.
 
