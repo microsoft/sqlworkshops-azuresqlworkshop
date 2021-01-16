@@ -102,7 +102,7 @@ SQL Server on Azure Virtual Machines is simply a version of SQL Server that you 
 
 There are some considerations for optimally deploying and managing SQL Server on Azure Virtual Machines including:
 
-- Install from [Azure gallery images](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sql/virtual-machines-windows-portal-sql-server-provision#4-configure-sql-server-settings) or take advantage of the [Resource Provider](http://www.aka.ms/sqlvm_rp_documentation) for licensing flexibility and to enable automatic backups and updates.
+- Install from [Azure gallery images](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sql/virtual-machines-windows-portal-sql-server-provision#4-configure-sql-server-settings) or take advantage of the [SQL Server IaaS Agent Extension](http://www.aka.ms/sqlvm_rp_documentation) for licensing flexibility and to enable automatic backups and updates.
 - Consider the Memory or Storage optimized Virtual Machine [sizes](https://azure.microsoft.com/en-us/pricing/details/virtual-machines/series/) for maximum performance requirements.
 - Use the right [storage configuration](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/sql/virtual-machines-windows-sql-server-storage-configuration) including taking advantage of Azure Blob Storage Read Caching.
 - Integrate your Azure Virtual Machines to on-premises networks using [Azure Virtual Networks](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview#communicate-with-on-premises-resources).
