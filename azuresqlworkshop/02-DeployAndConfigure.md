@@ -34,7 +34,7 @@ Before you start deploying things in Azure, it's important to understand what yo
 * Deployment method: Azure portal or command-line interfaces?
 * Deployment option: VM, DB, Elastic Pool, MI, or Instance Pool?
 * Purchasing model (Azure SQL Database only): DTU or vCore?
-* Service tier (SLO): General purpose, business critical, or hyperscale?
+* Service tier: General purpose, business critical, or hyperscale?
 * Hardware: Gen5, or something new?
 * Sizing: number of vCores and data max size?  
 
@@ -48,6 +48,8 @@ Aside from limits, rates, and capabilities discussed in the Azure SQL introducti
 
 * Memory
 * Max log size
+* Transaction Log Rate
+* Data IOPS
 * Size of tempdb
 * Max concurrent workers
 * Backup retention
@@ -322,17 +324,18 @@ SELECT @@VERSION
 SELECT * FROM sys.databases
 SELECT * FROM sys.objects
 SELECT * FROM sys.dm_os_schedulers
-SELECT * FROM sys.dm_os_sys_info --Not supported in Azure SQL Database
+SELECT * FROM sys.dm_os_sys_info
 SELECT * FROM sys.dm_os_process_memory --Not supported in Azure SQL Database
 SELECT * FROM sys.dm_exec_requests
 SELECT SERVERPROPERTY('EngineEdition')
 SELECT * FROM sys.dm_user_db_resource_governance -- Only available in Azure SQL DB and MI
+SELECT * FROM sys.dm_instance_resource_governance -- Only available in Azure SQL MI
 SELECT * FROM sys.dm_os_job_object -- Only available in Azure SQL DB and MI
 ```
 
-There are two queries that are not supported in Azure SQL Database related to OS system information and OS process memory. These queries are not supported because with Azure SQL Database, some things related to the OS are abstracted away from you, since you're just getting a database.  
+One query related to the OS process memory is not supported in Azure SQL Database, even though it might appear to work. This query isn't supported because with Azure SQL Database, some things related to the OS are abstracted away from you so you can focus on the database.
 
-Additionally, the last two queries are only available in Azure SQL Database and Azure SQL Managed Instance. The first, `sys.dm_user_db_resource_governance`, will return the actual configuration and capacity settings used by resource governance mechanisms in the current database or elastic pool. The second, `sys.dm_os_job_object` will return a single row describing the configuration of the job object that managers the SQL Server process, as well as resource consumption statistics.
+The last three queries are available only in Azure SQL Database and/or Azure SQL Managed Instance. The first, `sys.dm_user_db_resource_governance`, will return the configuration and capacity settings used by resource governance mechanisms in the current database or elastic pool. You can get similar information for an Azure SQL Managed Instance with the second, `sys.dm_instance_resource_governance`. The third, `sys.dm_os_job_object`, will return a single row that describes the configuration of the job object that manages the SQL Server process, as well as resource consumption statistics.
 
 The next two exercises will go through all the details involved in deploying an Azure SQL Database or an Azure SQL Managed Instance, and you will leverage the sandbox environment to deploy Azure SQL Database. After deployment, you'll leverage various verification queries and pre-run SQL Notebooks in Azure Data Studio to compare SQL Database, SQL Managed Instance, and SQL Server 2019.  
 
@@ -427,7 +430,7 @@ If you're familiar with SQL Server, there are a few configurations that are rest
 
 * Stopping or restarting servers
 * Instant file initialization
-* Locked pages in memory
+* Locked pages in memory (we may configure Locked pages in some SLO deployments)
 * FILESTREAM and Availability Groups (we use Availability Groups internally)
 * Server collation (in MI you can select during deployment but not change)
 * Startup parameters
@@ -442,13 +445,15 @@ Azure SQL Managed Instance and Database are PaaS offerings so restricting these 
 
 ### Storage management
 
-For Azure SQL Managed Instance, there is a maximum storage allowed for the instance and the number of vCores is going to affect the maximum storage (for example, the Business critical tier has a lower maximum storage). If you reach the maximum, you may get Message 1105 for a managed database or Message 1133 for the instance.
+For Azure SQL Managed Instance, there is a possible maximum storage size allowed for the instance based on your chosen SLO. You choose a maximum storage for the instance up to this possible maximum size. If you reach the maximum storage, you might get Message 1105 for a managed database or Message 1133 for the instance.
 
 The size of any new database will be based on the size of the model database, which is a 100 Mb data file and an 8 Mb log file, just like SQL Server. Also like SQL Server, the size of model is configurable. You have the ability to alter the size as well as the number of files, but you do not have control over the physical location of them, as Microsoft has commitments per your deployment choice on I/O performance. Additionally, since remote storage is used in the General Purpose service tier, performance can be affected by the data file and log file size.
 
-For Azure SQL Database, the *Data max size* is the maximum possible size of a single database file, and only one is allowed. The database file *Maxsize* (as defined by the `sys.database_files.max_size` column) can grow to the Data max size. To understand this idea of Data max size versus Maxsize, let's consider an example where a 1 TB (Data max size) General purpose database is deployed. When you do this, however, your database only requires ~500 GB (not 1 TB). As your database grows and approaches the Data max size, the database file Maxsize will also grow up to the 1 TB level.
+For Azure SQL Database, there is a possible maximum size of database files based on your chosen SLO. You choose a **Data max size** up to this possible maximum size. **Maxsize** for database files (as defined by the sys.database_files.max_size column) can grow to Data max size. 
 
-The transaction log is in addition to the data size, and it is truncated regularly due to automatic backups as Accelerated Database Recovery is on by default. The log's maximum size is always 30% of the Data max size. For example, if the data max size is 1 TB, then the maximum transaction log size is 0.3 TB, and the total of data max size and log size is 1.3 TB.
+To understand this idea of Data max size versus Maxsize, let's consider an example where a 1 TB (Data max size) General purpose database is deployed. When you do this, however, your database only requires ~500 GB (not 1 TB). As your database grows and approaches the Data max size, the database file, Maxsize for database files will also grow up to the 1 TB level.
+
+The transaction log is in addition to the data size and is included in what you pay for storage. It's truncated regularly due to automatic backups because Accelerated Database Recovery is on by default. The log's maximum size is always 30 percent of Data max size. For example, if Data max size is 1 TB, then the maximum transaction log size is 0.3 TB, and the total of Data max size and log size is 1.3 TB.
 
 The Azure SQL Database Hyperscale tier is different from the other service tiers in that it creates a database initially 40GB and grows automatically in size to the limit of 100TB. The transaction log has a fixed size restriction of 1TB.  
 
