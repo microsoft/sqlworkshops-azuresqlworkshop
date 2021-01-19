@@ -33,7 +33,7 @@ In all organizations, big or small, accidents can happen. That's why you always 
 
 One of the benefits of Azure SQL is that Azure can take care of all of this for you. Since Azure SQL manages your backups and runs in full recovery model, it can restore you to any point in time (you can even restore a deleted database). We also automatically encrypt your backups if you enable TDE on the logical server or instance.
 
-By default, a full database backup is taken once a week, with log backups every 5-10 minutes, and differential backups every 12 hours. These backup files are stored in Azure Storage with RA-GRS, meaning globally redundant storage. On an ongoing basis, the Azure SQL engineering team automatically tests the restore of automated databases backups of databases placed in logical servers and Elastic pools. For migrating to Azure SQL Managed Instance, an automatic initial backup with CHECKSUM of databases restored with the native RESTORE command or the Azure Database Migration Service is completed. Additionally, in Azure SQL Managed Instance, you can take a native COPY_ONLY backup and store it in Azure Blob storage.
+By default, a full database backup is taken once a week, with log backups every 5-10 minutes, and differential backups every 12-24 hours. The backup files are stored in Azure Storage in read-access geo-redundant storage (RA-GRS) by default. However, you can choose to alternatively have your backups in zone-redundant storage (ZRS) or locally-redundant storage (LRS). On an ongoing basis, the Azure SQL engineering team automatically tests the restore of automated databases backups of databases placed in logical servers and Elastic pools. For migrating to Azure SQL Managed Instance, an automatic initial backup with CHECKSUM of databases restored with the native RESTORE command or the Azure Database Migration Service is completed. Additionally, in Azure SQL Managed Instance, you can take a native COPY_ONLY backup and store it in Azure Blob storage.
 
 ## Creating a backup strategy with Azure SQL Managed Instance and Azure SQL Database
 
@@ -47,11 +47,11 @@ As far as retention for PITR goes, it varies between 1 and 35 days. By default, 
 
 ### Long term retention (LTR)
 
-If 35 days is not enough to meet your organization's needs or compliance, you can opt for long term retention (LTR). This capability enables you to automatically create full database backups that are stored in RA-GRS storage for up to 10 years. For Azure SQL Database, LTR is generally available, and for Azure SQL Managed Instance, LTR is available in a limited public preview.
+If 35 days is not enough to meet your organization's needs or compliance, you can opt for long term retention (LTR). This capability enables you to automatically create full database backups that are stored in RA-GRS, ZRS, or LRS storage for up to 10 years. For Azure SQL Database, LTR is generally available, and for Azure SQL Managed Instance, LTR is available in a limited public preview.
 
 ### Geo-restore
 
-If there is a catastrophic event, your organization needs to be able to recover. Since your backups are automatically stored in RA-GRS storage, if an entire region went down and your databases or managed instances were in that region, you're protected. You can do a geo-restore to any other region from the most recent geo-replicated backup. Note that this backup can be a bit behind from the primary, as it takes time to replicate the Azure blob to another region. You can easily perform a geo-restore using the Azure portal, PowerShell/Azure CLI, or REST APIs.  
+If there is a catastrophic event, your organization needs to be able to recover. Since your backups are automatically stored in RA-GRS storage (unless you opt for ZRS or LRS), if an entire region went down and your databases or managed instances were in that region, you're protected. You can do a geo-restore to any other region from the most recent geo-replicated backup. Note that this backup can be a bit behind from the primary, as it takes time to replicate the Azure blob to another region. You can easily perform a geo-restore using the Azure portal, PowerShell/Azure CLI, or REST APIs.  
 
 <br>
 
@@ -101,7 +101,7 @@ If any type of failure occurs and the service fabric decides a failover needs to
 
 ### Hyperscale
 
-The Hyperscale service tier is only available in Azure SQL Database, but is in the process of being developed for Azure SQL Managed Instance. This service tier has a unique architecture.
+The Hyperscale service tier is only available in Azure SQL Database. This service tier has a unique architecture because it uses a tiered layer of caches and page servers to expand the ability to quickly access database pages without having to access the data file directly.
 
 :::image type="content" source="../graphics/4-hyperscale-architecture-2.png" alt-text="Hyperscale architecture":::
 
@@ -111,7 +111,7 @@ One other interesting piece in this architecture is how the log service was pull
 
 Similar to the other service tiers, an automatic failover will happen if service fabric determines it needs to, but the recovery time will depend on the existence of secondary replicas. For example, if you have zero replicas and a failover occurs, it will be similar to the General purpose service tier where it first needs to find spare capacity. If you have one or more replicas, recovery is faster and more closely aligns to the Business critical service tier.
 
-Business critical maintains the highest performance and availability for workloads with small log writes that need low latency. However, the Hyperscale service tier will allow you to get a higher log throughput in terms of MB/second, so you'll need to consider your workload when choosing between the two.
+Business critical maintains the highest performance and availability for workloads with small log writes that need low latency. But the Hyperscale service tier allows you to get a higher log throughput in terms of MB/second, provides for the largest database sizes, and provides up to four secondary replicas for higher levels of read scale. So you'll need to consider your workload when you choose between the two.
 
 <p><img style="float: left; margin: 0px 15px 15px 0px;" src="../graphics/point1.png"><a name="2"><b>Activity 2</a>: Basic HA in Azure SQL Database</b></p>
 
