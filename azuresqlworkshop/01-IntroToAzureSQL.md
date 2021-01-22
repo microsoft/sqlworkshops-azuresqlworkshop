@@ -221,7 +221,7 @@ For a deeper explanation between provisioned and serverless compute (including s
 
 **Hardware**
 
-The default hardware generation at this time is referred to as **Gen5** hardware. Gen4 hardware exists but is reaching [end of life in 2020](https://azure.microsoft.com/en-us/updates/gen-4-hardware-on-azure-sql-database-approaching-end-of-life-in-2020/). As technology advances, you can expect that the hardware options available will change as well. For example, Fsv2-series (compute optimized) and M-series (memory optimized) hardware options recently became available in public preview for Azure SQL DB. You can review the latest hardware generations and availability [here](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore#hardware-generations).
+The default hardware generation at this time is referred to as **Gen5** hardware. Gen4 hardware exists but is reaching [end of life in 2020](https://azure.microsoft.com/en-us/updates/gen-4-hardware-on-azure-sql-database-approaching-end-of-life-in-2020/). As technology advances, you can expect that the hardware options available will change as well. For example, Fsv2-series (compute optimized), M-series (memory optimized), and DC-series (confidential computing) hardware options recently became available in public preview for Azure SQL DB. You can review the latest hardware generations and availability [here](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore#hardware-generations).
 
 > Note: If you choose General Purpose within Azure SQL DB and want to use the serverless compute tier, Gen5 hardware is currently the only option and it currently can scale up to 16 vCores.
 
