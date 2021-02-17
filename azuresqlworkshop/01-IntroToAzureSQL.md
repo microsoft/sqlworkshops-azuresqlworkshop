@@ -87,7 +87,7 @@ Many customers new to the cloud are concerned about compliance and trust, especi
 
 ## What is Azure SQL? ##
 
-Within the umbrella of the "Azure SQL" term, there are many deployment options and choices to be made in order to tailor to various customers' needs. While there are a lot of options, this is not meant to confuse or complicate things, but rather to give customers the flexibility to get and pay for exactly what they need. This topic will cover some of the challenges and scenarios that lead to choosing various Azure SQL deployment options, as well as some of the technical specifications for each of those options. The deployment options discussed in this topic include SQL Server on Azure virtual machines, Azure SQL managed instances, Azure SQL Databases, and Azure SQL "pools" (Azure SQL Instance Pools and Azure SQL Elastic Pools).  
+Within the umbrella of the Azure SQL platform, there are many deployment options and choices that you need to make to meet your needs. These options give you the flexibility to get and pay for exactly what you need. Here, we'll cover some of the considerations you need to make when you choose various Azure SQL deployment options. We'll also cover some of the technical specifications for each of these options. The deployment options discussed here include SQL Server on virtual machines, Azure SQL Managed Instance, Azure SQL Database, Azure SQL Managed Instance pools, and Azure SQL Database elastic database pools.    
 
 ![](../graphics/azuresql.png)  
 
@@ -146,7 +146,7 @@ As new features are developed, some customers can be whitelisted for specific fe
 
 ![](../graphics/sqlmi1.png)  
 
-[Azure SQL managed instance](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-managed-instance) is a PaaS deployment option of Azure SQL that basically gives you an evergreen instance of SQL Server. Most of the features available in the SQL Server box products are available in Azure SQL managed instance (Azure SQL MI). This option is ideal for customers who want to leverage instance-scoped features (features that are tied to an instance of SQL Server as opposed to features that are tied to a database in an instance of SQL Server) like SQL Server Agent, Service Broker, Common Language Runtime (CLR), etc. and want to move to Azure without rearchitecting their applications. While Azure SQL MI allows customers to access the instance-scoped features, customers do not have to worry about (nor do they have access to) the OS or the infrastructure underneath.     
+[Azure SQL managed instance](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-managed-instance) is a PaaS deployment option of Azure SQL that basically gives you an evergreen instance of SQL Server. Most of the features available in the SQL Server box products are available in Azure SQL managed instance (Azure SQL MI). This option is ideal for customers who want to leverage instance-scoped features (features that are tied to an instance of SQL Server as opposed to features that are tied to a database in an instance of SQL Server) like SQL Server Agent, Service Broker, common language runtime (CLR), Database Mail, linked servers, distributed transactions (preview), and Machine Learning Services. and want to move to Azure without rearchitecting their applications. While Azure SQL MI allows customers to access the instance-scoped features, customers do not have to worry about (nor do they have access to) the OS or the infrastructure underneath.     
 
 > **Fun fact**: You might be wondering why it is called *Managed Instance*. Let's break it down:  
 > - It is called an *Instance* because it is equivalent to a Database Engine Instance of SQL Server which is defined in our [documentation](https://docs.microsoft.com/en-us/sql/database-engine/configure-windows/database-engine-instances-sql-server?view=sql-server-ver15). The term Database Engine Instance is important because other instance types for SQL Server are things like [SSAS](https://nam06.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Fanalysis-services%2Finstances%2Fanalysis-services-instance-management%3Fview%3Dasallproducts-allversions&data=02%7C01%7CAnna.Hoffman%40microsoft.com%7Cb3514821e4e04a2de26108d7dc094dfe%7C72f988bf86f141af91ab2d7cd011db47%7C1%7C0%7C637219804823187896&sdata=Zz8gwcuGFo%2BCZ9rZ8DBjNKKvmvP7VrwwRDZVkiGOs0k%3D&reserved=0).  
@@ -201,7 +201,7 @@ You have two options for the purchasing model, [virtual core (vCore)-based](http
 > 
 > * Compute resources (the service tier + the number of vCores and the amount of memory + the generation of hardware).
 > * The type and amount of data and log storage.
-> * Backup storage ([read-access, geo-redundant storage (RA-GRS)](https://docs.microsoft.com/en-us/azure/storage/common/storage-designing-ha-apps-with-ragrs)).  
+> * Backup storage ([read-access, geo-redundant storage (RA-GRS)](https://docs.microsoft.com/en-us/azure/storage/common/storage-designing-ha-apps-with-ragrs), Zone-redundant storage (ZRS), or locally-redundant storage (LRS)).  
 
 For the purposes of this workshop, we'll focus on the vCore purchasing model (recommended). You can optionally review the DTU model by [comparing vCores and DTUs in-depth here](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-purchase-models
 ).  
@@ -221,9 +221,9 @@ For a deeper explanation between provisioned and serverless compute (including s
 
 **Hardware**
 
-The default hardware generation at this time is referred to as **Gen5** hardware. Gen4 hardware exists but is reaching [end of life in 2020](https://azure.microsoft.com/en-us/updates/gen-4-hardware-on-azure-sql-database-approaching-end-of-life-in-2020/). As technology advances, you can expect that the hardware options available will change as well. For example, Fsv2-series (compute optimized), M-series (memory optimized), and DC-series (confidential computing) hardware options recently became available in public preview for Azure SQL DB. You can review the latest hardware generations and availability [here](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore#hardware-generations).
+The default hardware generation at this time is referred to as *Gen5* hardware. As technology advances, you can expect the available hardware options to change as well. For example, Fsv2-series (compute-optimized), M-series (memory-optimized), and DC-series (confidential computing) hardware options recently became available for SQL Database. You can review the latest hardware generations and availability [here](https://docs.microsoft.com/en-us/azure/sql-database/sql-database-service-tiers-vcore#hardware-generations).
 
-> Note: If you choose General Purpose within Azure SQL DB and want to use the serverless compute tier, Gen5 hardware is currently the only option and it currently can scale up to 16 vCores.
+> Note: If you choose General Purpose within Azure SQL DB and want to use the serverless compute tier, Gen5 hardware is currently the only option and it currently can scale up to 40 vCores.
 
 <p style="border-bottom: 1px solid lightgrey;"></p>
 

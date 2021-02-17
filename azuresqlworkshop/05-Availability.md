@@ -33,7 +33,7 @@ In all organizations, big or small, accidents can happen. That's why you always 
 
 One of the benefits of Azure SQL is that Azure can take care of all of this for you. Since Azure SQL manages your backups and runs in full recovery model, it can restore you to any point in time (you can even restore a deleted database). We also automatically encrypt your backups if you enable TDE on the logical server or instance.
 
-By default, a full database backup is taken once a week, with log backups every 5-10 minutes, and differential backups every 12-24 hours. The backup files are stored in Azure Storage in read-access geo-redundant storage (RA-GRS) by default. However, you can choose to alternatively have your backups in zone-redundant storage (ZRS) or locally-redundant storage (LRS). On an ongoing basis, the Azure SQL engineering team automatically tests the restore of automated databases backups of databases placed in logical servers and Elastic pools. For migrating to Azure SQL Managed Instance, an automatic initial backup with CHECKSUM of databases restored with the native RESTORE command or the Azure Database Migration Service is completed. Additionally, in Azure SQL Managed Instance, you can take a native COPY_ONLY backup and store it in Azure Blob storage.
+By default, a full database backup is taken once a week. Log backups are taken every 5-10 minutes, and differential backups every 12 hours. The backup files are stored in Azure Storage in read-access geo-redundant storage (RA-GRS) by default. However, you can choose to alternatively have your backups in zone-redundant storage (ZRS) or locally-redundant storage (LRS) which will be discussed later in the module. On an ongoing basis, the Azure SQL engineering team automatically tests the restore of automated backups of databases placed in logical servers and elastic database pools. For migrations to Azure SQL Managed Instance, an automatic initial backup with checksum of databases restored with the native RESTORE command or the Azure Database Migration Service occurs. And in Azure SQL Managed Instance, you can optionally take a native copy-only backup and store it in Azure Blob storage.
 
 ## Creating a backup strategy with Azure SQL Managed Instance and Azure SQL Database
 
@@ -51,7 +51,7 @@ If 35 days is not enough to meet your organization's needs or compliance, you ca
 
 ### Geo-restore
 
-If there is a catastrophic event, your organization needs to be able to recover. Since your backups are automatically stored in RA-GRS storage (unless you opt for ZRS or LRS), if an entire region went down and your databases or managed instances were in that region, you're protected. You can do a geo-restore to any other region from the most recent geo-replicated backup. Note that this backup can be a bit behind from the primary, as it takes time to replicate the Azure blob to another region. You can easily perform a geo-restore using the Azure portal, PowerShell/Azure CLI, or REST APIs.  
+If there's a catastrophic event, your organization needs to be able to recover. Your backups are automatically stored in RA-GRS (unless you opt for ZRS or LRS) meaning your backups will be stored in the paired region. So if an entire region goes down and your databases or managed instances are in that region, you're protected. You can do a geo-restore to any other region from the most recent geo-replicated backup. This backup can be a bit behind the primary because it takes time to replicate the Azure blob to another region. You can easily perform a geo-restore by using the Azure portal, the PowerShell/Azure CLI, or REST APIs.
 
 <br>
 
@@ -265,7 +265,7 @@ Azure SQL maintains a Service Level Agreement (SLA) which provides financial bac
 
 At the time of the most recent review of this unit, the highest availability (99.995%) can be achieved from an Azure SQL Database Business critical deployment with Availability Zones configured. Additionally, the Business critical tier is the only option in the industry which supplies RPO and RTO SLAs of 5 seconds and 30 seconds, respectively. RPO stands for recovery point object, which represents how much data one is potentially prepared and willing to lose in the worst case scenario. RTO stands for recovery time objective, which represents how much time it takes, if or when a disaster occurs, to be back up and running again.
 
-For General purpose or single zone Business critical deployments, the SLA is 99.99%.
+For General Purpose or single-zone Business Critical deployments of Azure SQL Database or Azure SQL Managed Instance, the SLA is 99.99%.
 
 The Hyperscale tier's SLA depends on the number of replicas. Recall, in Hyperscale you choose how many replicas you have, and if there are zero, when you fail over, it is more similar to that of General purpose. If you have replicas, then a failover is more similar to that of Business critical. The corresponding SLA depending on number of replicas is:  
 
