@@ -257,7 +257,7 @@ In the Business critical tier in Azure SQL Database, you can opt-in (for no addi
 
 From performance standpoint, there may be a small increase in network latency, since your AG is now spread across datacenters with some distance between them. For this reason, leveraging AZs is not turned on by default. You have the choice to opt for what's commonly called a "multi-az" or "single-az" deployment. Making this decision is as simple as adding a parameter to a PowerShell/Azure CLI command or checking a box in the portal.  
 
-Availability zones are relatively new to Azure SQL, so are currently only available in select regions and service tiers. Over time, this will likely change to be supported in more regions and potentially more service tiers.
+Availability Zones are relatively new to Azure SQL, so they're currently  available only in certain regions and service tiers. Over time, this capability is likely to be supported in more regions and potentially more service tiers. For example, recently the General Purpose tier for Azure SQL Database released a preview for the multi-az deployment.
 
 ### Azure SQL SLA
 
