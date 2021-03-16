@@ -404,9 +404,11 @@ There are built-in roles available to reduce need for higher-level Azure RBAC ro
 
 ### Authentication
 
-For both Azure SQL Database and Azure SQL Managed Instance, SQL authentication is used for deployment, and this is referred to as the **server admin**. In Azure SQL Database, the server admin is a server-level principal for the Azure SQL Database logical server, but for Azure SQL Managed Instance it is a member of the sysadmin server role. In addition, "Mixed Mode" authentication is forced for both deployment options.
+For both Azure SQL Database instances and Azure SQL managed instances, SQL authentication is used for deployment. This authentication role is referred to as the *server admin*. For databases in Azure SQL Database, the server admin is a server-level principal for the Azure SQL Database logical server but, for Azure SQL managed instances, the role is a member of the sysadmin server role.
 
-If you are migrating a workload that needs Windows Authentication or your organization leverages Azure Active Directory (Azure AD), you can use Azure AD. For both Azure SQL Managed Instance and Azure SQL Database, you can assign an Azure AD server admin using the portal or command-line tools.  
+If you're migrating a workload that needs Windows Authentication or your organization uses Azure Active Directory (Azure AD), you can use Azure AD. For both Azure SQL managed instances and Azure SQL Database instances, you can assign an Azure AD server admin by using the portal or command-line tools.
+
+Mixed Mode authentication (allowing both SQL and Azure Active Directory logins) is the default. Azure Active Directory-only authentication (now in public preview) is also an option you can configure. When you use this option, SQL logins can be created and existing logins will remain. However, only Azure Active Directory-based logins and users can connect to logical servers and instances.
 
 ### Grant other users access
 
