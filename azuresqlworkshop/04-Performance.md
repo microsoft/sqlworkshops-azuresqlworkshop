@@ -1083,7 +1083,7 @@ Azure SQL Database uses a combination of entries discovered in DMVs like sys.dm_
 When Azure SQL Database detects a recommended index, an entry can be discovered in the DMV **sys.dm_db_tuning_recommendations**.
 
 ```sql
-SELECT * FROM syus.dm_db_tuning_recommendations;
+SELECT * FROM sys.dm_db_tuning_recommendations;
 ```
 
 A given query that has been identified that could be improved with a recommended index must run several executions over a period of time in order for the qualified index to be a candidate. In addition, Azure SQL Database deploys services in the cloud to look for candidate indexes. These services don't run constantly. Therefore, recommendations for workload may not show up immediately in the DMVs and/or the portal.
