@@ -1,0 +1,1 @@
+"C:\Program Files\Microsoft Corporation\RMLUtils\ostress" -Sazuresql4beginners.database.windows.net -dhighcpu_lackofresources -Q"exec getcustomer 1" -r20000 -n5 -q -Usqladmin -PCprsqlserver2022 -T146

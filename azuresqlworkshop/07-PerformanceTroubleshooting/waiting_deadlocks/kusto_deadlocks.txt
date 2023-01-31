@@ -1,0 +1,4 @@
+AzureDiagnostics
+| where ResourceProvider == "MICROSOFT.SQL"
+| where Category == 'Deadlocks'
+| parse _ResourceId with * "/microsoft.sql/servers/" Resource

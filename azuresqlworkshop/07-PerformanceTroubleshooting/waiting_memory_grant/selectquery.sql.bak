@@ -1,0 +1,7 @@
+SELECT customer_type, customer_date, count(*)
+FROM customers
+WHERE customer_date < GETDATE()
+GROUP BY customer_type, customer_date
+ORDER BY customer_date, customer_type;
+GO
+
