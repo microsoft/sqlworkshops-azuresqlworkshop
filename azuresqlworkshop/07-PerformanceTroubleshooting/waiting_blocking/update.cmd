@@ -1,0 +1,1 @@
+"C:\Program Files\Microsoft Corporation\RMLUtils\ostress" -Sazuresql4beginners.database.windows.net -dwaiting_blocking -iupdate.sql -r1 -n1 -q -Usqladmin -PCprsqlserver2022 -T146 -oupdate

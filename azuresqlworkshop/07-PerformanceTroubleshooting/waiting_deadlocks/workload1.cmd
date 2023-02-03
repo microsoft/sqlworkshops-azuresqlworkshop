@@ -1,0 +1,1 @@
+"C:\Program Files\Microsoft Corporation\RMLUtils\ostress" -Sazuresql4beginners.database.windows.net -dwaiting_deadlocks -isessionOne.sql -r1000 -n5 -q -Usqladmin -PCprsqlserver2022 -T146 -oworkload1
