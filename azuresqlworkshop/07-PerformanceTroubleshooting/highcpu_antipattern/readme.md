@@ -1,6 +1,6 @@
 # Steps to troubleshooting a High CPU problem due to an anti-pattern query
 
-Use the following steps to reproduce, monitor, and resolve a high CPU condition for an Azure SQL Database because of an anti-pattern query
+Use the following steps to reproduce, monitor, and resolve a high CPU condition for an Azure SQL Database because of an anti-pattern query.
 
 ## Setup
 
