@@ -1,1 +1,1 @@
-"C:\Program Files\Microsoft Corporation\RMLUtils\ostress" -Sazuresql4beginners.database.windows.net -dhighcpu_missingindex -Q"exec getcustomer 1" -r300000 -n5 -q -Usqladmin -PCprsqlserver2022 -T146
+"C:\Program Files\Microsoft Corporation\RMLUtils\ostress" -S<logical server>.database.windows.net -dhighcpu_missingindex -Q"exec getcustomer 1" -r300000 -n5 -q -U<admin user> -P<password> -T146
