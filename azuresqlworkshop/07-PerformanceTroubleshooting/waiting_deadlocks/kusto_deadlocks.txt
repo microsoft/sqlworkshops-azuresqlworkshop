@@ -1,4 +1,5 @@
 AzureDiagnostics
 | where ResourceProvider == "MICROSOFT.SQL"
 | where Category == 'Deadlocks'
+| where DatabaseName_s == 'waiting_deadlocks'
 | parse _ResourceId with * "/microsoft.sql/servers/" Resource
