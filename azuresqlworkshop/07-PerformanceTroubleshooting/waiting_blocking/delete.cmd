@@ -1,1 +1,1 @@
-"C:\Program Files\Microsoft Corporation\RMLUtils\ostress" -S<logical server>.database.windows.net -dwaiting_blocking -idelete.sql -r1 -n1 -q -U>admin user> -P<password> -T146 -odelete
+"C:\Program Files\Microsoft Corporation\RMLUtils\ostress" -S<logical server>.database.windows.net -dwaiting_blocking -idelete.sql -r1 -n1 -q -U<admin user> -P<password> -T146 -odelete

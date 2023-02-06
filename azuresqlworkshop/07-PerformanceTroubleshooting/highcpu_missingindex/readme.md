@@ -16,10 +16,10 @@ Setup the problem using the following steps:
 **Note:** You can reproduce the problem immediately but if you wait for 60 minutes the metrics in the Azure Portal are "cleaner" as they will not show any resources from creating the table and loading data.
 
 1. Run an example workload using the script **workload.cmd**. This command script executes the stored procedure several times using multiple concurrent users. It will take ~10-13mins for this to complete.
-1. Using the Azure Portal for the Azure SQL Database select Overview in the resource menu on the left. Then select the Monitoring tab. Scroll down to view the Compute Utilization chart. Notice the CPU Percentage is at 100% for a sustained period of time.
 
 ## Analyze the problem
 
+1. Using the Azure Portal for the Azure SQL Database select Overview in the resource menu on the left. Then select the Monitoring tab. Scroll down to view the Compute Utilization chart. Notice the CPU Percentage is at 100% for a sustained period of time.
 1. Connect to the database with SSMS.
 1. In Object Explorer, expand the Query Store folder under the database. Run the Top Resource Consuming Queries report. Change the report to Avg CPU. You may see more than one "dot" but this is for the same query plan and the Average CPU is high in any of these cases.
 1. The query with the highest average is from the stored procedure used for the workload.
