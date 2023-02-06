@@ -81,11 +81,11 @@ Setup the problem using the following steps:
 
 1. If you look closer at **selectquery.sql** you will see the query is using this WHERE clause:
 
-`WHERE customer_date < GETDATE()`
+    `WHERE customer_date < GETDATE()`
 
-If you look at the results of the last execution and hover over the Index Seek operators you can see the result is ~1M rows. This means the engine is trying to seek almost the entire table and the WHERE clause is not very selective.
+    If you look at the results of the last execution and hover over the Index Seek operators you can see the result is ~1M rows. This means the engine is trying to seek almost the entire table and the WHERE clause is not very selective.
 1. In addition, if you look at the table definition in **customer_ddl.sql** you will see one of the columns in our query is customer_type and it is defined as follows:
 
-`customer_type char(500) not null`
+    `customer_type char(500) not null`
 
-Defining a column with type char and making it not null will require SQL to *pad* all values to the entire 500 characters making rows very large and requiring more pages to seek even for 1M rows. It is possible that even if the WHERE clause needed to get 1M rows, the query would run much faster if the column was defined as varchar(500).
+    Defining a column with type char and making it not null will require SQL to *pad* all values to the entire 500 characters making rows very large and requiring more pages to seek even for 1M rows. It is possible that even if the WHERE clause needed to get 1M rows, the query would run much faster if the column was defined as varchar(500).
