@@ -14,10 +14,6 @@ select ROW_NUMBER() over(order by c1.object_id) id from sys.columns c1 cross joi
 insert customers
 select id, convert(nvarchar(10), id),getdate(), 'customer type'+convert(char(20), id) from cte
 go
-/* insert into customers select * from customers;
-go
-insert into customers select * from customers;
-go */
 -- Clear the query store to ensure statistics are new
 --
 ALTER DATABASE [waiting_memorygrant] SET QUERY_STORE CLEAR;

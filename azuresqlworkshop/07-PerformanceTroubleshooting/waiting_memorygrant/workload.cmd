@@ -1,1 +1,1 @@
-"C:\Program Files\Microsoft Corporation\RMLUtils\ostress" -Sazuresql4beginners.database.windows.net -dwaiting_memorygrant -iselectquery.sql -n%1 -r%2 -q -Usqladmin -PCprsqlserver2022 -T146
+"C:\Program Files\Microsoft Corporation\RMLUtils\ostress" -S<logical server>.database.windows.net -dwaiting_memorygrant -iselectquery.sql -n%1 -r%2 -q -U<admin user> -P<password> -T146

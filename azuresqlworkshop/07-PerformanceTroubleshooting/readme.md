@@ -10,7 +10,7 @@ Each module describes the specific setup required but to go through these exampl
 
 - An Azure subscription with rights to create an Azure SQL Database. Most scenarios use a General Purpose Service Tier Azure SQL Database with 2 vCores. One scenario will require you to scale the database to 20 vCores.
 - A client computer that has network connectivity to connect to an Azure SQL Database
-- SQL Server Management Studio (SSMS) which you can download from <https://aka.ms/ssms19>
+- SQL Server Management Studio (SSMS) which you can download from <https://aka.ms/ssms19>. A working knowledge of SSMS will be helpful for these exercises. Use the following quickstart to learn how to use SSMS with Azure SQL: <https://learn.microsoft.com/en-us/sql/ssms/quickstarts/ssms-connect-query-azure-sql>
 - The client stress tool ostress.exe which you can download from <https://aka.ms/ostress.exe>
 
 ## Performance Troubleshooting Scenarios
